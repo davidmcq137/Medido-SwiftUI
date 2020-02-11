@@ -164,7 +164,6 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         print("Failed to find user's location: \(error.localizedDescription)")
     }
     
-    
     func MedidoStartup() {
         
         print("In Medido startup")
@@ -197,10 +196,6 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
             UserDefaults.standard.set(defaultFactor, forKey: "ppoEmpty") // mult by 10 for storage as int
         }
         
-        //note selectedPlaneID is handled in MedidoAircraft.swift
-        selectedPlaneName = UserDefaults.standard.string(forKey: "selName") ?? "Unknown Aircraft"
-        selectedPlaneTankCap = UserDefaults.standard.double(forKey: "selTankCap")
-
         print("returning from Medido startup")
         
     }

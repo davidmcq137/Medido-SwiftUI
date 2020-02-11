@@ -24,6 +24,10 @@ class Telem: ObservableObject {
     @Published var BLEUserData: Bool = true
     @Published var iPadLat: Double = 0
     @Published var iPadLon: Double = 0
+    @Published var selectedPlaneName: String = ""
+    @Published var selectedPlaneTankCap: Double = 0
+    @Published var selectedPlaneID: UUID!
+
 }
 
 
@@ -97,15 +101,15 @@ func updateIncomingData () {
             case "fCNT":
                 tele.fuelFlow = vf
                 //print("fuelFlow \(vf)")
-                if selectedPlaneTankCap > 0 {
-                    if vf > selectedPlaneTankCap {
+                if tele.selectedPlaneTankCap > 0 {
+                    if vf > tele.selectedPlaneTankCap {
                         if autoOff == false {
-                            let utstr = String(format: "%0.1f", selectedPlaneTankCap)
+                            let utstr = String(format: "%0.1f", tele.selectedPlaneTankCap)
                             let utterance = AVSpeechUtterance(string: "Auto Shut-off at " + utstr +  " ounces")
                             utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
                             utterance.rate = 0.5
                             synth.speak(utterance)
-                            print("Auto off at \(selectedPlaneTankCap) oz")
+                            print("Auto off at \(tele.selectedPlaneTankCap) oz")
                             writeValue(data: "(Off)")
                         }
                         autoOff = true

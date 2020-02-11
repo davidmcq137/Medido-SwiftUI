@@ -11,9 +11,6 @@ import SwiftUI
 import Combine
 
 var tele: Telem!
-var selectedPlaneName: String = ""
-var selectedPlaneTankCap: Double = 0
-var selectedPlaneID: UUID!
 var autoOff = false
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -36,6 +33,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("creating instance of Telem()")
         tele = Telem() //create instance of @Environment object
         print("after create instance Telem()")
+
+        //note selectedPlaneID is handled in MedidoAircraft.swift
+        tele.selectedPlaneName = UserDefaults.standard.string(forKey: "selName") ?? "Unknown Aircraft"
+        tele.selectedPlaneTankCap = UserDefaults.standard.double(forKey: "selTankCap")
+        
+
         
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

@@ -26,6 +26,7 @@ struct MedidoAircraft: View {
     @State private var tankcapy: String = ""
     @State private var showingAlert = false
     @State private var selectedID: String? = UserDefaults.standard.string(forKey: "selUUID")
+    @EnvironmentObject var tele: Telem
     
     //let uuid = UUID().uuidString
     //var uuid = UUID(uuidString: yourString)
@@ -61,15 +62,18 @@ struct MedidoAircraft: View {
                                 } else {
                                     plane.name = self.acname
                                 }
-                                plane.id = UUID()
+                                //plane.id = UUID()
                                 plane.tanksize = tsd
                                 do {
-                                    print("about to moc.save")
                                     print("self.tankcapy \(self.tankcapy), tsd \(tsd)")
                                     print("self.acname \(self.acname)")
+                                    print("about to moc.save")
+                                    try self.moc.save()
+                                    print("after try self.moc.save")
+                                    self.tele.selectedPlaneName = self.acname
+                                    self.tele.selectedPlaneTankCap = tsd
                                     self.tankcapy = ""
                                     self.acname = ""
-                                    try self.moc.save()
                                     self.submenu = false
                                 } catch {
                                     print("core data error")
@@ -105,17 +109,17 @@ struct MedidoAircraft: View {
                     ForEach(planes, id: \.id) { plane in
                         HStack {
                             Button (action: {
-                                print("select!")
-                                selectedPlaneName = plane.name ?? "unk"
-                                selectedPlaneTankCap = plane.tanksize
+                                //print("select!")
+                                self.tele.selectedPlaneName = plane.name ?? "unk"
+                                self.tele.selectedPlaneTankCap = plane.tanksize
                                 if plane.id != nil {
-                                    selectedPlaneID = plane.id!
+                                    self.tele.selectedPlaneID = plane.id!
                                     self.selectedID = (plane.id!).uuidString
                                     UserDefaults.standard.set(self.selectedID, forKey: "selUUID")
-                                    UserDefaults.standard.set(selectedPlaneTankCap, forKey: "selTankCap")
-                                    UserDefaults.standard.set(selectedPlaneName, forKey: "selName")
+                                    UserDefaults.standard.set(self.tele.selectedPlaneTankCap, forKey: "selTankCap")
+                                    UserDefaults.standard.set(self.tele.selectedPlaneName, forKey: "selName")
                                 }
-                                print("selectedID: \(String(describing: plane.id))")
+                               // print("selectedID: \(String(describing: plane.id))")
                             }) {
                                 Text("Select").font(.system(size: 12))
                             }
