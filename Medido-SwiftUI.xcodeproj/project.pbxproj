@@ -1,0 +1,396 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7BA9A6A223EF2E6B0000C074 /* MedidoDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA9A6A123EF2E6B0000C074 /* MedidoDevices.swift */; };
+		7BA9A6A423EF66580000C074 /* MedidoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA9A6A323EF66580000C074 /* MedidoSettings.swift */; };
+		7BA9A6A623EF72FE0000C074 /* MedidoAircraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA9A6A523EF72FE0000C074 /* MedidoAircraft.swift */; };
+		7BD8C68023EE5F76002F6DE3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C67F23EE5F76002F6DE3 /* AppDelegate.swift */; };
+		7BD8C68223EE5F76002F6DE3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C68123EE5F76002F6DE3 /* SceneDelegate.swift */; };
+		7BD8C68523EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C68323EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodeld */; };
+		7BD8C68923EE5F7A002F6DE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BD8C68823EE5F7A002F6DE3 /* Assets.xcassets */; };
+		7BD8C68C23EE5F7A002F6DE3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BD8C68B23EE5F7A002F6DE3 /* Preview Assets.xcassets */; };
+		7BD8C68F23EE5F7A002F6DE3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BD8C68D23EE5F7A002F6DE3 /* LaunchScreen.storyboard */; };
+		7BD8C69723EE5FBE002F6DE3 /* updateIncomingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C69623EE5FBE002F6DE3 /* updateIncomingData.swift */; };
+		7BD8C69923EE5FE5002F6DE3 /* MedidoMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C69823EE5FE5002F6DE3 /* MedidoMain.swift */; };
+		7BD8C69D23EE6182002F6DE3 /* BLELocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C69C23EE6182002F6DE3 /* BLELocation.swift */; };
+		7BD8C69F23EE668E002F6DE3 /* UUIDKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C69E23EE668E002F6DE3 /* UUIDKey.swift */; };
+		7BD8C6A123EE673B002F6DE3 /* Gauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C6A023EE673B002F6DE3 /* Gauge.swift */; };
+		7BD8C6A323EE734A002F6DE3 /* Contentview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD8C6A223EE734A002F6DE3 /* Contentview.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7BA9A6A123EF2E6B0000C074 /* MedidoDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedidoDevices.swift; sourceTree = "<group>"; };
+		7BA9A6A323EF66580000C074 /* MedidoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedidoSettings.swift; sourceTree = "<group>"; };
+		7BA9A6A523EF72FE0000C074 /* MedidoAircraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedidoAircraft.swift; sourceTree = "<group>"; };
+		7BD8C67C23EE5F76002F6DE3 /* Medido-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Medido-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BD8C67F23EE5F76002F6DE3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7BD8C68123EE5F76002F6DE3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		7BD8C68423EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medido_SwiftUI.xcdatamodel; sourceTree = "<group>"; };
+		7BD8C68823EE5F7A002F6DE3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7BD8C68B23EE5F7A002F6DE3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		7BD8C68E23EE5F7A002F6DE3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7BD8C69023EE5F7A002F6DE3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7BD8C69623EE5FBE002F6DE3 /* updateIncomingData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = updateIncomingData.swift; sourceTree = "<group>"; };
+		7BD8C69823EE5FE5002F6DE3 /* MedidoMain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MedidoMain.swift; sourceTree = "<group>"; };
+		7BD8C69C23EE6182002F6DE3 /* BLELocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLELocation.swift; sourceTree = "<group>"; };
+		7BD8C69E23EE668E002F6DE3 /* UUIDKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUIDKey.swift; sourceTree = "<group>"; };
+		7BD8C6A023EE673B002F6DE3 /* Gauge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gauge.swift; sourceTree = "<group>"; };
+		7BD8C6A223EE734A002F6DE3 /* Contentview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contentview.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7BD8C67923EE5F76002F6DE3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7BD8C67323EE5F75002F6DE3 = {
+			isa = PBXGroup;
+			children = (
+				7BD8C67E23EE5F76002F6DE3 /* Medido-SwiftUI */,
+				7BD8C67D23EE5F76002F6DE3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7BD8C67D23EE5F76002F6DE3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7BD8C67C23EE5F76002F6DE3 /* Medido-SwiftUI.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7BD8C67E23EE5F76002F6DE3 /* Medido-SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				7BD8C67F23EE5F76002F6DE3 /* AppDelegate.swift */,
+				7BD8C68123EE5F76002F6DE3 /* SceneDelegate.swift */,
+				7BD8C69823EE5FE5002F6DE3 /* MedidoMain.swift */,
+				7BD8C69623EE5FBE002F6DE3 /* updateIncomingData.swift */,
+				7BD8C6A223EE734A002F6DE3 /* Contentview.swift */,
+				7BD8C68823EE5F7A002F6DE3 /* Assets.xcassets */,
+				7BA9A6A323EF66580000C074 /* MedidoSettings.swift */,
+				7BA9A6A523EF72FE0000C074 /* MedidoAircraft.swift */,
+				7BD8C69C23EE6182002F6DE3 /* BLELocation.swift */,
+				7BD8C6A023EE673B002F6DE3 /* Gauge.swift */,
+				7BD8C69E23EE668E002F6DE3 /* UUIDKey.swift */,
+				7BD8C68D23EE5F7A002F6DE3 /* LaunchScreen.storyboard */,
+				7BA9A6A123EF2E6B0000C074 /* MedidoDevices.swift */,
+				7BD8C69023EE5F7A002F6DE3 /* Info.plist */,
+				7BD8C68323EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodeld */,
+				7BD8C68A23EE5F7A002F6DE3 /* Preview Content */,
+			);
+			path = "Medido-SwiftUI";
+			sourceTree = "<group>";
+		};
+		7BD8C68A23EE5F7A002F6DE3 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				7BD8C68B23EE5F7A002F6DE3 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7BD8C67B23EE5F76002F6DE3 /* Medido-SwiftUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BD8C69323EE5F7A002F6DE3 /* Build configuration list for PBXNativeTarget "Medido-SwiftUI" */;
+			buildPhases = (
+				7BD8C67823EE5F76002F6DE3 /* Sources */,
+				7BD8C67923EE5F76002F6DE3 /* Frameworks */,
+				7BD8C67A23EE5F76002F6DE3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Medido-SwiftUI";
+			productName = "Medido-SwiftUI";
+			productReference = 7BD8C67C23EE5F76002F6DE3 /* Medido-SwiftUI.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7BD8C67423EE5F75002F6DE3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1130;
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = "David McQueeney";
+				TargetAttributes = {
+					7BD8C67B23EE5F76002F6DE3 = {
+						CreatedOnToolsVersion = 11.3;
+					};
+				};
+			};
+			buildConfigurationList = 7BD8C67723EE5F76002F6DE3 /* Build configuration list for PBXProject "Medido-SwiftUI" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7BD8C67323EE5F75002F6DE3;
+			productRefGroup = 7BD8C67D23EE5F76002F6DE3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7BD8C67B23EE5F76002F6DE3 /* Medido-SwiftUI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7BD8C67A23EE5F76002F6DE3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BD8C68F23EE5F7A002F6DE3 /* LaunchScreen.storyboard in Resources */,
+				7BD8C68C23EE5F7A002F6DE3 /* Preview Assets.xcassets in Resources */,
+				7BD8C68923EE5F7A002F6DE3 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7BD8C67823EE5F76002F6DE3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BD8C69F23EE668E002F6DE3 /* UUIDKey.swift in Sources */,
+				7BA9A6A623EF72FE0000C074 /* MedidoAircraft.swift in Sources */,
+				7BD8C6A323EE734A002F6DE3 /* Contentview.swift in Sources */,
+				7BA9A6A423EF66580000C074 /* MedidoSettings.swift in Sources */,
+				7BD8C68023EE5F76002F6DE3 /* AppDelegate.swift in Sources */,
+				7BD8C6A123EE673B002F6DE3 /* Gauge.swift in Sources */,
+				7BD8C69723EE5FBE002F6DE3 /* updateIncomingData.swift in Sources */,
+				7BD8C69D23EE6182002F6DE3 /* BLELocation.swift in Sources */,
+				7BD8C69923EE5FE5002F6DE3 /* MedidoMain.swift in Sources */,
+				7BA9A6A223EF2E6B0000C074 /* MedidoDevices.swift in Sources */,
+				7BD8C68223EE5F76002F6DE3 /* SceneDelegate.swift in Sources */,
+				7BD8C68523EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		7BD8C68D23EE5F7A002F6DE3 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7BD8C68E23EE5F7A002F6DE3 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7BD8C69123EE5F7A002F6DE3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		7BD8C69223EE5F7A002F6DE3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7BD8C69423EE5F7A002F6DE3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"Medido-SwiftUI/Preview Content\"";
+				DEVELOPMENT_TEAM = Y8UM4R3JR7;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "Medido-SwiftUI/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Marshall-Fazzone.Medido-SwiftUI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7BD8C69523EE5F7A002F6DE3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"Medido-SwiftUI/Preview Content\"";
+				DEVELOPMENT_TEAM = Y8UM4R3JR7;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "Medido-SwiftUI/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Marshall-Fazzone.Medido-SwiftUI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7BD8C67723EE5F76002F6DE3 /* Build configuration list for PBXProject "Medido-SwiftUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BD8C69123EE5F7A002F6DE3 /* Debug */,
+				7BD8C69223EE5F7A002F6DE3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7BD8C69323EE5F7A002F6DE3 /* Build configuration list for PBXNativeTarget "Medido-SwiftUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BD8C69423EE5F7A002F6DE3 /* Debug */,
+				7BD8C69523EE5F7A002F6DE3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		7BD8C68323EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				7BD8C68423EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodel */,
+			);
+			currentVersion = 7BD8C68423EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodel */;
+			path = Medido_SwiftUI.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 7BD8C67423EE5F75002F6DE3 /* Project object */;
+}
