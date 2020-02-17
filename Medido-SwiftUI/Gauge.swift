@@ -33,7 +33,7 @@ struct Gauge: View {
                 GaugeArc()//.border(Color.red)
                 Needle()
                     .rotationEffect(needleAngle(value: self.value, minValue: self.minValue, maxValue: self.maxValue), anchor: .center)
-                DrawLabels(labels: self.labels, value: self.value, minValue: self.minValue, maxValue: self.maxValue, legend: title, units: units).border(Color.yellow)
+                DrawLabels(labels: self.labels, value: self.value, minValue: self.minValue, maxValue: self.maxValue, legend: title, units: units)//.border(Color.yellow)
                 DrawTicks(count: self.labels.count, width: 0, center: 0).foregroundColor(Color.black)
                 DrawFineTicks(count: self.labels.count, width: 0, center: 0).foregroundColor(Color.black)
             }
@@ -67,7 +67,7 @@ struct DrawTicks: Shape {
         
         
         
-        return p.strokedPath(.init(lineWidth: 3, lineCap: .square ))
+        return p.strokedPath(.init(lineWidth: 4, lineCap: .square ))
     }
 }
 
@@ -83,7 +83,7 @@ struct DrawFineTicks: Shape {
         var point1: CGPoint
         var point2: CGPoint
         let length1 = min(Double(rect.maxX), Double(rect.maxY)) / 4.0 * 1.30
-        let length2 = min(Double(rect.maxX), Double(rect.maxY)) / 4.0 * 1.24
+        let length2 = min(Double(rect.maxX), Double(rect.maxY)) / 4.0 * 1.22
         
         //print("count: \(count)")
         //print("width: \(width)")
@@ -104,7 +104,7 @@ struct DrawFineTicks: Shape {
         //p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
 
         
-        return p.strokedPath(.init(lineWidth: 2, lineCap: .square ))
+        return p.strokedPath(.init(lineWidth: 1, lineCap: .square ))
     }
 }
 
@@ -127,7 +127,7 @@ struct DrawLabels: View {
                     //xp = 150 / 2 - 150 / 2 * sin(th)
                     //yp = 150 / 2 - 150 / 2 * cos(th)
                     
-                    Text("\(self.labels[$0])").position(labelPoint(value: self.labels[$0], length: 0.82*min(Double(gr.size.width), Double(gr.size.height)) / 2.0, centerX: Double(gr.size.width) / 2.0, centerY: Double(gr.size.height) / 2.0, minValue: self.minValue, maxValue: self.maxValue)).font(.system(size: 12))
+                    Text("\(self.labels[$0])").position(labelPoint(value: self.labels[$0], length: 0.88*min(Double(gr.size.width), Double(gr.size.height)) / 2.0, centerX: Double(gr.size.width) / 2.0, centerY: Double(gr.size.height) / 2.0, minValue: self.minValue, maxValue: self.maxValue)).font(.system(size: 12))
                 }
                 Text(self.units).position(CGPoint(x: gr.size.width/2, y: 0.55 * gr.size.width / 2.0 + gr.size.height / 2.0)).font(.system(size: 15))
                 Text(self.legend).position(CGPoint(x: gr.size.width/2, y: 0.76 * gr.size.width / 2.0 + gr.size.height / 2.0)).font(.system(size: 18))
@@ -140,7 +140,7 @@ struct GaugeArc : Shape {
     func path(in rect: CGRect) -> Path {
         //print("GaugeArc \(rect.minX) \(rect.midX) \(rect.maxX) \(rect.minY), \(rect.midY) \(rect.maxY)")
         var p = Path()
-        p.addArc(center: CGPoint(x: rect.midX, y:rect.midY), radius: min(rect.midX, rect.midY)*0.6, startAngle: .degrees(-135-90-10), endAngle: .degrees(135-90+10), clockwise: false)
+        p.addArc(center: CGPoint(x: rect.midX, y:rect.midY), radius: min(rect.midX, rect.midY)*0.65, startAngle: .degrees(-135-90-10), endAngle: .degrees(135-90+10), clockwise: false)
         return p.strokedPath(.init(lineWidth: min(rect.maxX, rect.maxY)/18, lineCap: .round))
     }
 }
@@ -151,9 +151,9 @@ struct Needle: Shape {
 
         var path = Path()
         let eps: CGFloat = 0.03 * min(rect.maxX, rect.maxY)
-        let lenscale: CGFloat = 0.50
+        let lenscale: CGFloat = 0.55
         let len: CGFloat = lenscale * min((rect.maxX - rect.minX), (rect.maxY - rect.minY)) / CGFloat(2.0)
-        print("Needle \(rect.minX) \(rect.midX) \(rect.maxX) \(rect.minY), \(rect.midY) \(rect.maxY)")
+        //print("Needle \(rect.minX) \(rect.midX) \(rect.maxX) \(rect.minY), \(rect.midY) \(rect.maxY)")
         path.addEllipse(in: CGRect(x: rect.midX - eps, y: rect.midY - eps, width: eps*2, height: eps*2))
         path.move(to: CGPoint(x: Double(-eps + rect.midX), y: Double(0 + rect.midY)))
         path.addLine(to: CGPoint(x: Double(-eps/5 + rect.midX), y: Double(-len + rect.midY)))

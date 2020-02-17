@@ -18,6 +18,7 @@ class Telem: ObservableObject {
     @Published var pumpSpeed: Double = 0
     @Published var fuelFlow: Double = 0
     @Published var flowRate: Double = 0
+    @Published var battVolt: Double = 0
     @Published var BLERSSIs: [Int] = []
     @Published var BLEperipherals: [String] = []
     @Published var BLEUUIDs: [String] = []
@@ -27,7 +28,8 @@ class Telem: ObservableObject {
     @Published var selectedPlaneName: String = ""
     @Published var selectedPlaneTankCap: Double = 0
     @Published var selectedPlaneID: UUID!
-
+    @Published var BLEConnected = false
+    @Published var isMetric: Bool = false
 }
 
 
@@ -94,12 +96,20 @@ func updateIncomingData () {
                 tele.runningTimeString = String(format: "%02.0f:%02.0f", rtmins, rtsecs)
                 //print("runningTime \(vf)")
             case "pPSI":
-                tele.pressPSI = vf
+                if tele.isMetric {
+                    tele.pressPSI = vf * 1000 / 14.50
+                } else {
+                    tele.pressPSI = vf
+                }
                 //print("pressPSI \(vf)")
             case "rPWM":
                 tele.pumpSpeed = 100.0 * vf / 1023.0
             case "fCNT":
-                tele.fuelFlow = vf
+                if tele.isMetric {
+                    tele.fuelFlow = vf
+                } else {
+                    tele.fuelFlow = vf * 1.77 / 60
+                }
                 //print("fuelFlow \(vf)")
                 if tele.selectedPlaneTankCap > 0 {
                     if vf > tele.selectedPlaneTankCap {
@@ -116,16 +126,31 @@ func updateIncomingData () {
                     }
                 }
             case "fRAT":
-                tele.flowRate = vf
+                if tele.isMetric {
+                    tele.flowRate = vf
+                } else {
+                    tele.flowRate = vf * 1.77 / 60
+                }
                 //print("flowRate \(vf)")
-            case "volt1":
+            case "Batt":
+                //print("Batt: \(vf)")
+                tele.battVolt = vf * 7.504
+                let bco = UserDefaults.standard.integer(forKey: "battCutoff")
+                //print("Batt: \(tele.battVolt) | \(vf) | \(bco)")
+                if bco > 1 && tele.battVolt > 0.0 && (tele.battVolt < (Double(bco) / 10.0) ) {
+                    print("Powering off, bco: \(bco)")
+                    writeValue(data: "(PwrOff)")
+                }
                 break
             case "Heap":
+                //print("heap: \(vf)")
                 break
             case "Init":
                 print("Case init")
             case "pPWM":
                 break
+            case "PowerDown":
+                print("Medido is powering down")
             default:
                 print("Bad valName: \(valName)")
             }

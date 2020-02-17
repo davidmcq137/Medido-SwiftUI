@@ -12,28 +12,35 @@ struct MedidoSettings: View {
     
     @State private var ppoFill: Double = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
     @State private var ppoEmpty: Double = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
+    @State private var battCutoff: Double = Double(UserDefaults.standard.integer(forKey: "battCutoff")) / 10.0
+    @EnvironmentObject var tel: Telem
 
     // allow +/- 10 from default value of 104 pulse per oz
     let ppoMax = 114.0
     let ppoMin = 94.0
     
+    // default battery cutoff 3V per cell * 3 cells = 9V
+    
     let defaults = UserDefaults.standard
     
     var body: some View {
         
-        VStack{
+        VStack (alignment: .leading){
+            VStack {
+                Toggle(isOn: $tel.isMetric) {
+                Text("Metric Units Displayed")
+              }
+            }
             HStack {
                 Stepper(onIncrement: {
                     if self.ppoFill + 0.1 <= self.ppoMax {
                         self.ppoFill = self.ppoFill + 0.1
                         self.defaults.set(Int(self.ppoFill*10), forKey: "ppoFill")
-                        writeValue(data: String(format: "(CalFactFill: %d)", Int(self.ppoFill*10)))
                     }
                 }, onDecrement: {
                     if self.ppoFill - 0.1 >= self.ppoMin {
                         self.ppoFill = self.ppoFill - 0.1
                         self.defaults.set(Int(self.ppoFill*10), forKey: "ppoFill")
-                        writeValue(data: String(format: "(CalFactFill: %d)", Int(self.ppoFill*10)))
                     }
                 }, label: { Text("Fill cal factor (PPO)")
                 })
@@ -45,17 +52,29 @@ struct MedidoSettings: View {
                     if self.ppoEmpty + 0.1 <= self.ppoMax {
                         self.ppoEmpty = self.ppoEmpty + 0.1
                         self.defaults.set(Int(self.ppoEmpty*10), forKey: "ppoEmpty")
-                        writeValue(data: String(format: "(CalFactEmpty: %d)", Int(self.ppoEmpty*10)))
                     }
                 }, onDecrement: {
                     if self.ppoEmpty - 0.1 >= self.ppoMin {
                         self.ppoEmpty = self.ppoEmpty - 0.1
                         self.defaults.set(Int(self.ppoEmpty*10), forKey: "ppoEmpty")
-                        writeValue(data: String(format: "(CalFactEmpty: %d)", Int(self.ppoEmpty*10)))
                     }
                 }, label: { Text("Empty cal factor (PPO)")
                 })
                 Text(" \(ppoEmpty, specifier: "%0.1f")")
+            }
+            
+            HStack {
+                Stepper(onIncrement: {
+                    self.battCutoff = self.battCutoff + 0.1
+                    self.defaults.set(Int(self.battCutoff*10), forKey: "battCutoff")
+                }, onDecrement: {
+                    if self.battCutoff - 0.1 >= 0 {
+                        self.battCutoff = self.battCutoff - 0.1
+                        self.defaults.set(Int(self.battCutoff*10), forKey: "battCutoff")
+                    }
+                }, label: { Text("Power Off Voltage")
+                })
+                Text(" \(battCutoff, specifier: "%0.2f")")
             }
         }
     }

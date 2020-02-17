@@ -17,7 +17,6 @@ var txCharacteristic : CBCharacteristic?
 var rxCharacteristic : CBCharacteristic?
 var blePeripheral : CBPeripheral?
 var characteristicASCIIValue = NSString()
-var BLEConnected = false
 var BLETimer: Timer?
 var InputBuffer: String = ""
 
@@ -54,42 +53,44 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
 
 
         blePeripheral = peripheral
-        var new: Bool = false
+        var matchID: Bool = false
         print("have new one: \( peripheral.name ?? "unknown") ")
+        print("peripheral.name: \(peripheral.name ?? "unkname"), peripheral.identifier: \(peripheral.identifier)")
         print("peripherals.count: \(peripherals.count)")
         
         if peripherals.count > 0 {
             for i in 0 ..< peripherals.count {
-                print("i: \(i), peripheral: \(peripheral), peripherals[i]: \(peripherals[i])")
-                if peripheral.name != peripherals[i].name {
-                    print("new: \(peripheral.name ?? "unknown")")
-                    new = true
+                print("i: \(i), peripheral identifier: \(peripheral.identifier), peripherals[i].identifier: \(peripherals[i].identifier)")
+                if peripheral.identifier == peripherals[i].identifier {
+                    print("match to: \(peripheral.identifier)")
+                    matchID = true
                 }
             }
             
-            if new == false {
+            if matchID == true {
                 print("Duplicate: \(peripheral)")
+                print("returning")
                 return
             }
         }
         
         var str: String = "Device: " + (peripheral.name ?? "unknown")
         str = str + " UUID: " + (blePeripheral?.identifier.uuidString ?? "unknown") + " RSSI: \(RSSI)"
+        print("str: \(str)")
         
+        print("Appending")
         peripherals.append(peripheral)
-        RSSIs.append(RSSI)
+        tele.BLEperipherals.append(str)
+        tele.BLEUUIDs.append(blePeripheral?.identifier.uuidString ?? "unknown")
+        print("Count after append: \(peripherals.count)")
+
         peripheral.delegate = self
 
-        // put test here so as not to append duplicates...
-        
-        tele.BLEperipherals.append(str)
-        tele.BLERSSIs.append(Int(truncating: RSSI))
-        tele.BLEUUIDs.append(blePeripheral?.identifier.uuidString ?? "unknown")
-        
 
         if blePeripheral != nil {
             print("Found new pheripheral devices with services")
             print("Peripheral name: \(peripheral.name ?? "unknown")")
+            print("Peripharal identifier: \(peripheral.identifier)")
             print("RSSI: \(RSSI)")
             //print ("Advertisement Data : \(advertisementData)")
         }
@@ -110,9 +111,10 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         // C43BD593-DA12-7816-79D0-8B39B1E0C424
         // 982526B8-658D-D0CB-5280-2049D0BF8305
         // 087F253D-24A7-EF4E-9D4D-09650EC0C673
+        //
         if blePeripheral?.identifier.uuidString == storedBLEUUID {
         //if blePeripheral?.identifier.uuidString == "087F253D-24A7-EF4E-9D4D-09650EC0C673" {
-            print("YUP!")
+            print("YUP! ... Connecting to device \(peripheral.identifier)")
             characteristicASCIIValue = ""
             connectToDevice()
         } else {
@@ -196,12 +198,23 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
             UserDefaults.standard.set(defaultFactor, forKey: "ppoEmpty") // mult by 10 for storage as int
         }
         
+        let defaultCutoff = 9.0 * 10 // store as Int with one decimal place
+        
+        let bco = UserDefaults.standard.integer(forKey: "battCutoff")
+        print("battCutoff is \(bco)")
+        if bco < 1 {
+            UserDefaults.standard.set(defaultCutoff, forKey: "battCutoff")
+        }
+        
+        
         print("returning from Medido startup")
         
     }
     
     func startScan() {
         peripherals = []
+        tele.BLEperipherals = []
+        tele.BLEUUIDs = []
         print("Now Scanning...")
         timer.invalidate()
         centralManager?.scanForPeripherals(withServices: [BLEService_UUID] , options: [CBCentralManagerScanOptionAllowDuplicatesKey:false])
@@ -214,8 +227,9 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         centralManager?.stopScan()
         print("Scan Stopped")
         print("Number of Peripherals Found: \(peripherals.count)")
-        if peripherals.count > 0 && !BLEConnected { // hopefully user went to BLE devices tab and picked one...
-            print("****** Found at least one peripheral: RESTARTING SCAN *********")
+        //if peripherals.count > 0 && !BLEConnected { // hopefully user went to BLE devices tab and picked one...
+        if !tele.BLEConnected { // hopefully user went to BLE devices tab and picked one...
+            print("****** Not connected: RESTARTING SCAN *********")
             startScan()
         }
     }
@@ -226,16 +240,15 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
      */
     //-Connected
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        //print("*****************************")
-        //print("Connection complete")
-        BLEConnected = true
+        tele.BLEConnected = true
         let BLE_id = blePeripheral!.identifier.uuidString
+        print("didconnect")
         print("Peripheral ID: \(BLE_id)")
         print("Peripheral info: \(String(describing: blePeripheral))")
-        
+        print("BLEService_UUID: \(BLEService_UUID)")
         //Stop Scan- We don't need to scan once we've connected to a peripheral. We got what we came for.
+        print("Found matching one, stop scanning")
         centralManager?.stopScan()
-        //print("Called centralManager: Scan Stopped")
         
         //Erase data that we might have
         data.length = 0
@@ -328,8 +341,6 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
     func refreshAction(_ sender: AnyObject) {
         // was @ibaction func refreshAction
         disconnectFromDevice()
-        peripherals = []
-        RSSIs = []
         startScan()
     }
     
@@ -392,11 +403,11 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
             peripheral.discoverCharacteristics(nil, for: service)
             // bleService = service
         }
-        //print("Discovered Services: \(services)")
+        print("Discovered Services: \(services)")
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
-        //print("********* did discover descriptors for **********************************************")
+        print("********* did discover descriptors for **********************************************")
         
         if error != nil {
             print("\(error.debugDescription)")
@@ -404,19 +415,19 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         }
         if ((characteristic.descriptors) != nil) {
             
-            //for x in characteristic.descriptors!{
-            //   let descript = x as CBDescriptor!
-            //    print("function name: DidDiscoverDescriptorForChar \(String(describing: descript?.description))")
-            //    print("Rx Value \(String(describing: rxCharacteristic?.value))")
-            //    print("Tx Value \(String(describing: txCharacteristic?.value))")
-            // }
+            for x in characteristic.descriptors!{
+               let descript = x as CBDescriptor?
+                print("function name: DidDiscoverDescriptorForChar \(String(describing: descript?.description))")
+                print("Rx Value \(String(describing: rxCharacteristic?.value))")
+                print("Tx Value \(String(describing: txCharacteristic?.value))")
+            }
         }
     }
     
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnected")
-        BLEConnected = false
+        tele.BLEConnected = false
         //NotificationCenter.default.removeObserver(self)
         // no point ot restarting scan here .. need to check periodically in incoming data loop
         print("Restarting Scan")
@@ -447,6 +458,7 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
     
     //-Connection
     func connectToDevice () {
+        print("connectToDevice connecting to: \(String(describing: blePeripheral))")
         centralManager?.connect(blePeripheral!, options: nil)
     }
     
