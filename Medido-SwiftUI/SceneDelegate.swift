@@ -40,7 +40,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tele.selectedPlaneName = UserDefaults.standard.string(forKey: "selName") ?? "Unknown Aircraft"
         tele.selectedPlaneTankCap = UserDefaults.standard.double(forKey: "selTankCap")
         
-
+        tele.isMetric = UserDefaults.standard.bool(forKey: "isMetric") // if not exist, returns false .. perfect :-)
         
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

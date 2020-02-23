@@ -28,8 +28,9 @@ struct MedidoSettings: View {
         VStack (alignment: .leading){
             VStack {
                 Toggle(isOn: $tel.isMetric) {
-                Text("Metric Units Displayed")
+                    Text("Metric Units Displayed\(checkBool(tgl: tel.isMetric))")
                 }.padding()
+                                
             }
             HStack {
                 Stepper(onIncrement: {
@@ -80,6 +81,11 @@ struct MedidoSettings: View {
     }
 }
 
+private func checkBool(tgl: Bool) -> String {
+    print("tgl is: \(tgl)")
+    UserDefaults.standard.set(tgl, forKey: "isMetric")
+    return("")
+}
 /*
  
  @State var quantity: Int = 0

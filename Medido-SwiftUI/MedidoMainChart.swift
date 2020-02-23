@@ -32,20 +32,21 @@ struct MedidoMainChart: View {
                           zmin: 0.0,   zmax: 2.0,  zlabel: "Pressure (psi) [0,2]: ",   zvalue: tel.pressPSI, zcolor: Color.yellow
             )
             if tel.isMetric == false {
-                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%0.1f") oz)").font(.system(size: 20))
+                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.1f") oz)").font(.system(size: 20))
                     .padding(5)
                 Text("Total Fuel Flow \(tele.fuelFlow, specifier: "%.1f") oz").font(.system(size: 25))
                     .padding(5)
             } else {
-                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%0.1f") L)").font(.system(size: 20))
+                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") ml)").font(.system(size: 20))
                     .padding(5)
-                Text("Total Fuel Flow \(tele.fuelFlow, specifier: "%.3f") L").font(.system(size: 25))
+                Text("Total Fuel Flow \(tele.fuelFlow, specifier: "%.0f") ml").font(.system(size: 25))
                     .padding(5)
             }
-            
+
             if tel.isMetric == false {
                 Slider(value: $sMaxPress, in: 0...10, step: 0.1) { ss in
-                    writeValue(data: "(Prs: \(Int(self.sMaxPress * 10.0)))")
+                    self.tel.sliderPressure = Int(self.sMaxPress * 10)
+                    writeValue(data: "(Prs: \(self.tel.sliderPressure)")
                 }
                 .frame(width: sW, height: sH)
                 .padding(5)
@@ -54,7 +55,11 @@ struct MedidoMainChart: View {
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.1f") PSI").font(.system(size: 15))
             } else {
                 Slider(value: $sMaxPress, in: 0...1000, step: 10.0) { ss in
-                    writeValue(data: "(Prs: \(Int(self.sMaxPress * 14.50 / 1000 * 10.0)))")
+                    self.tel.sliderPressure = Int(self.sMaxPress * 14.5 / 1000 * 10)
+                    if self.tel.sliderPressure > 15 { // just in case...
+                        self.tel.sliderPressure = 15
+                    }
+                    writeValue(data: "(Prs: \(self.tel.sliderPressure)")
                 }
                 .frame(width: sW, height: sH)
                 .padding(5)
@@ -64,12 +69,14 @@ struct MedidoMainChart: View {
             }
             
             Slider(value: $sMaxSpeed, in: 0...100, step: 0.1) { ss in
-                writeValue(data: "(Spd: \(Int(self.sMaxSpeed)))")
+                self.tel.sliderSpeed = Int(self.sMaxSpeed)
+                writeValue(data: "(Spd: \(self.tel.sliderSpeed)")
             }
             .frame(width: sW, height: sH)
             .padding(5)
             .accentColor(Color.blue)
             //.border(Color.red)
+
             Text("Max Pump Speed \(Int(self.sMaxSpeed), specifier: "%d") %").font(.system(size: 15))
             HStack {
                 Button(action: {
@@ -126,7 +133,11 @@ struct MedidoMainChart: View {
             }.padding()
             HStack (alignment: .bottom){
                 VStack (alignment: .leading){
-                    Text("Flow Rate: \(tele.flowRate, specifier: "%.1f")")
+                    if !tele.isMetric {
+                        Text("Flow Rate (oz/min): \(tele.flowRate, specifier: "%.1f")")
+                    } else {
+                        Text("Flow Rate (ml/min): \(tele.flowRate, specifier: "%.0f")")
+                    }
                     //Spacer()
                     Text("Pump Speed: \(Int(tele.pumpSpeed), specifier: "%d") %")
                     //Spacer()

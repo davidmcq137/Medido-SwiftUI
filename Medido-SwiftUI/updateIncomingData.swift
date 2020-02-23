@@ -34,6 +34,8 @@ class Telem: ObservableObject {
     @Published var yp: [Double] = []
     @Published var zp: [Double] = []
     @Published var msgStr: String = ""
+    @Published var sliderSpeed: Int = 0
+    @Published var sliderPressure: Int = 0
 }
 
 
@@ -63,6 +65,10 @@ func clearChartRecData () {
 }
 
 func updateIncomingData () {
+    
+    var vfa: Double = 0
+    var utterance: AVSpeechUtterance!
+    
     //print("Incoming data")
     ////NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "Notify"), object: nil , queue: nil){
     ////notification in
@@ -127,6 +133,7 @@ func updateIncomingData () {
                         tele.yp.remove(at: 0)
                         tele.zp.remove(at: 0)
                     }
+                    print("#, apppending: \(tele.xp.count), \(vf), \(tele.flowRate), \(tele.pressPSI)")
                     tele.xp.append(vf)
                     tele.yp.append(tele.flowRate)
                     tele.zp.append(tele.pressPSI)
@@ -136,7 +143,7 @@ func updateIncomingData () {
                 //print("runningTime \(vf)")
             case "pPSI":
                 if tele.isMetric {
-                    tele.pressPSI = vf * 1000 / 14.50
+                    tele.pressPSI = vf / (14.503 * 1000.0) // metric: store as mBar
                 } else {
                     tele.pressPSI = vf
                 }
@@ -145,20 +152,30 @@ func updateIncomingData () {
                 tele.pumpSpeed = 100.0 * vf / 1023.0
             case "fCNT":
                 if tele.isMetric {
-                    tele.fuelFlow = vf * 1.77 / 60
+                    vfa = vf * 29.574       // metric: store as ml
+                    tele.fuelFlow = vfa     // fall thru to autoshutoff with vf in ml
                 } else {
                     tele.fuelFlow = vf
+                    vfa = vf
                 }
                 //print("fuelFlow \(vf)")
                 if tele.selectedPlaneTankCap > 0 {
-                    if vf > tele.selectedPlaneTankCap {
+                    if vfa > tele.selectedPlaneTankCap {
                         if autoOff == false {
-                            let utstr = String(format: "%0.1f", tele.selectedPlaneTankCap)
-                            let utterance = AVSpeechUtterance(string: "Auto Shut-off at " + utstr +  " ounces")
+                            let utstr = String(format: "%.0f", tele.selectedPlaneTankCap)
+                            if !tele.isMetric {
+                                utterance = AVSpeechUtterance(string: "Pump off at " + utstr +  " ounces")
+                            } else {
+                                utterance = AVSpeechUtterance(string: "Pump off at " + utstr +  " milliliters")
+                            }
                             utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
                             utterance.rate = 0.5
                             synth.speak(utterance)
-                            setInfoMessage(msg: String(format: "Auto off at %.1f oz", tele.selectedPlaneTankCap) )
+                            if !tele.isMetric {
+                                setInfoMessage(msg: String(format: "Pump off at %.1f oz", tele.selectedPlaneTankCap) )
+                            } else {
+                                setInfoMessage(msg: String(format: "Pump off at %.0f ml", tele.selectedPlaneTankCap) )
+                            }
                             writeValue(data: "(Off)")
                         }
                         autoOff = true
@@ -166,7 +183,7 @@ func updateIncomingData () {
                 }
             case "fRAT":
                 if tele.isMetric {
-                    tele.flowRate = vf * 1.77 / 60
+                    tele.flowRate = vf * 29.574
                 } else {
                     tele.flowRate = vf
                 }
@@ -183,7 +200,8 @@ func updateIncomingData () {
                 }
                 break
             case "pSTP":
-                print("pSTP") // got notification of pulses on piss tank .. code here to take action
+                setInfoMessage(msg: "Pump off: Overflow detected")
+                writeValue(data: "(Off)")
             case "fDEL":
                 //if vf != 0.0 {
                 //    print("fDEL: \(vf)")
@@ -202,6 +220,8 @@ func updateIncomingData () {
                 //print("heap: \(vf)")
                 break
             case "Init":
+                writeValue(data: "(Prs: \(tele.sliderPressure)")
+                writeValue(data: "(Spd: \(tele.sliderSpeed)")
                 print("Case init")
             case "pPWM":
                 break

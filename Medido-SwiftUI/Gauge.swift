@@ -12,14 +12,16 @@ import SwiftUI
 struct Gauge: View {
     
     private let value: Double
+    private let fmtstr: String
     private let title: String
     private let units: String
-    private let labels: [Int]
+    private let labels: [Double]
     private let minValue: Double
     private let maxValue: Double
 
-    init(value: Double, title: String, units: String, labels: [Int], minValue: Double, maxValue: Double) {
+    init(value: Double, fmtstr: String, title: String, units: String, labels: [Double], minValue: Double, maxValue: Double) {
         self.value = value
+        self.fmtstr = fmtstr
         self.title = title
         self.units = units
         self.minValue = minValue
@@ -33,7 +35,7 @@ struct Gauge: View {
                 GaugeArc()//.border(Color.red)
                 Needle()
                     .rotationEffect(needleAngle(value: self.value, minValue: self.minValue, maxValue: self.maxValue), anchor: .center)
-                DrawLabels(labels: self.labels, value: self.value, minValue: self.minValue, maxValue: self.maxValue, legend: title, units: units)//.border(Color.yellow)
+                DrawLabels(labels: self.labels, value: self.value, fmtstr: fmtstr, minValue: self.minValue, maxValue: self.maxValue, legend: title, units: units)//.border(Color.yellow)
                 DrawTicks(count: self.labels.count, width: 0, center: 0).foregroundColor(Color.black)
                 DrawFineTicks(count: self.labels.count, width: 0, center: 0).foregroundColor(Color.black)
             }
@@ -111,8 +113,9 @@ struct DrawFineTicks: Shape {
 
 struct DrawLabels: View {
     
-    let labels: [Int]
+    let labels: [Double]
     let value: Double
+    let fmtstr: String
     let minValue: Double
     let maxValue: Double
     let legend: String
@@ -126,8 +129,8 @@ struct DrawLabels: View {
                     //th = -3 * .pi / 4 + $0 * 2 * (3 * .pi / 4)/5
                     //xp = 150 / 2 - 150 / 2 * sin(th)
                     //yp = 150 / 2 - 150 / 2 * cos(th)
-                    
-                    Text("\(self.labels[$0])").position(labelPoint(value: self.labels[$0], length: 0.88*min(Double(gr.size.width), Double(gr.size.height)) / 2.0, centerX: Double(gr.size.width) / 2.0, centerY: Double(gr.size.height) / 2.0, minValue: self.minValue, maxValue: self.maxValue)).font(.system(size: 12))
+                    Text(String(format: self.fmtstr, self.labels[$0])).position(labelPoint(value: self.labels[$0], length: 0.88*min(Double(gr.size.width), Double(gr.size.height)) / 2.0, centerX: Double(gr.size.width) / 2.0, centerY: Double(gr.size.height) / 2.0, minValue: self.minValue, maxValue: self.maxValue)).font(.system(size: 12))
+                    //Text("\(self.labels[$0])").position(labelPoint(value: self.labels[$0], length: 0.88*min(Double(gr.size.width), Double(gr.size.height)) / 2.0, centerX: Double(gr.size.width) / 2.0, centerY: Double(gr.size.height) / 2.0, minValue: self.minValue, maxValue: self.maxValue)).font(.system(size: 12))
                 }
                 Text(self.units).position(CGPoint(x: gr.size.width/2, y: 0.55 * gr.size.width / 2.0 + gr.size.height / 2.0)).font(.system(size: 15))
                 Text(self.legend).position(CGPoint(x: gr.size.width/2, y: 0.76 * gr.size.width / 2.0 + gr.size.height / 2.0)).font(.system(size: 18))
@@ -171,8 +174,8 @@ private func CGRotate (x: Double, y: Double, x0: Double, y0: Double, rotation: D
     return CGPoint(x: x * cs - y * ss + x0, y: x * ss + y * cs + y0)
 }
 
-private func labelPoint(value: Int, length: Double, centerX: Double, centerY: Double, minValue: Double, maxValue: Double) -> CGPoint {
-    let a: Double = Double(labelAngle(value: Double(value), minValue: minValue, maxValue: maxValue))
+private func labelPoint(value: Double, length: Double, centerX: Double, centerY: Double, minValue: Double, maxValue: Double) -> CGPoint {
+    let a: Double = Double(labelAngle(value: value, minValue: minValue, maxValue: maxValue))
     let p: CGPoint = CGPoint(x: length*sin(a) + centerX, y: length*cos(a) + centerY)
     return p
 }

@@ -104,7 +104,11 @@ struct MedidoAircraft: View {
                     HStack {
                         Text("Name").offset(x:50)
                         Spacer()
-                        Text("Tank Size (oz)")
+                        if !tele.isMetric {
+                            Text("Tank Size (oz)")
+                        } else {
+                            Text("Tank Size (ml)")
+                        }
                     }
                     ForEach(planes, id: \.id) { plane in
                         HStack {
