@@ -24,30 +24,37 @@ struct ContentView: View {
                 .tabItem {
                     VStack {
                         Image(systemName: "1.circle")
-                        Text("Main")
+                        Text("Gauge")
                     }
             }.tag(1)
-            MedidoDeviceList()
+            MedidoMainChart()
                 .tabItem {
                     VStack {
                         Image(systemName: "2.circle")
-                        Text("BLE Devices")
+                        Text("Chart")
                     }
             }.tag(2)
-            MedidoSettings()
+            MedidoDeviceList()
                 .tabItem {
                     VStack {
                         Image(systemName: "3.circle")
-                        Text("Settings")
+                        Text("BLE Devices")
                     }
             }.tag(3)
-            MedidoAircraft()
+            MedidoSettings()
                 .tabItem {
                     VStack {
                         Image(systemName: "4.circle")
-                        Text("Aircraft")
+                        Text("Settings")
                     }
             }.tag(4)
+            MedidoAircraft()
+                .tabItem {
+                    VStack {
+                        Image(systemName: "5.circle")
+                        Text("Aircraft")
+                    }
+            }.tag(5)
         }
     }
 }

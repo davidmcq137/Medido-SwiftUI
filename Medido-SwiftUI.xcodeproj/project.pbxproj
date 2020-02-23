@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B1886A9240214D2001DA640 /* MedidoMainChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1886A8240214CD001DA640 /* MedidoMainChart.swift */; };
+		7B1886AB24021516001DA640 /* chartRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1886AA24021516001DA640 /* chartRecorder.swift */; };
 		7BA9A6A223EF2E6B0000C074 /* MedidoDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA9A6A123EF2E6B0000C074 /* MedidoDevices.swift */; };
 		7BA9A6A423EF66580000C074 /* MedidoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA9A6A323EF66580000C074 /* MedidoSettings.swift */; };
 		7BA9A6A623EF72FE0000C074 /* MedidoAircraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA9A6A523EF72FE0000C074 /* MedidoAircraft.swift */; };
@@ -25,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7B1886A8240214CD001DA640 /* MedidoMainChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedidoMainChart.swift; sourceTree = "<group>"; };
+		7B1886AA24021516001DA640 /* chartRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chartRecorder.swift; sourceTree = "<group>"; };
 		7BA9A6A123EF2E6B0000C074 /* MedidoDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedidoDevices.swift; sourceTree = "<group>"; };
 		7BA9A6A323EF66580000C074 /* MedidoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedidoSettings.swift; sourceTree = "<group>"; };
 		7BA9A6A523EF72FE0000C074 /* MedidoAircraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedidoAircraft.swift; sourceTree = "<group>"; };
@@ -77,8 +81,10 @@
 				7BD8C67F23EE5F76002F6DE3 /* AppDelegate.swift */,
 				7BD8C68123EE5F76002F6DE3 /* SceneDelegate.swift */,
 				7BD8C69823EE5FE5002F6DE3 /* MedidoMain.swift */,
+				7B1886A8240214CD001DA640 /* MedidoMainChart.swift */,
 				7BD8C69623EE5FBE002F6DE3 /* updateIncomingData.swift */,
 				7BD8C6A223EE734A002F6DE3 /* Contentview.swift */,
+				7B1886AA24021516001DA640 /* chartRecorder.swift */,
 				7BD8C68823EE5F7A002F6DE3 /* Assets.xcassets */,
 				7BA9A6A323EF66580000C074 /* MedidoSettings.swift */,
 				7BA9A6A523EF72FE0000C074 /* MedidoAircraft.swift */,
@@ -178,12 +184,14 @@
 				7BD8C6A323EE734A002F6DE3 /* Contentview.swift in Sources */,
 				7BA9A6A423EF66580000C074 /* MedidoSettings.swift in Sources */,
 				7BD8C68023EE5F76002F6DE3 /* AppDelegate.swift in Sources */,
+				7B1886A9240214D2001DA640 /* MedidoMainChart.swift in Sources */,
 				7BD8C6A123EE673B002F6DE3 /* Gauge.swift in Sources */,
 				7BD8C69723EE5FBE002F6DE3 /* updateIncomingData.swift in Sources */,
 				7BD8C69D23EE6182002F6DE3 /* BLELocation.swift in Sources */,
 				7BD8C69923EE5FE5002F6DE3 /* MedidoMain.swift in Sources */,
 				7BA9A6A223EF2E6B0000C074 /* MedidoDevices.swift in Sources */,
 				7BD8C68223EE5F76002F6DE3 /* SceneDelegate.swift in Sources */,
+				7B1886AB24021516001DA640 /* chartRecorder.swift in Sources */,
 				7BD8C68523EE5F76002F6DE3 /* Medido_SwiftUI.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

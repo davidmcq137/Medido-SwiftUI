@@ -33,6 +33,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("creating instance of Telem()")
         tele = Telem() //create instance of @Environment object
         print("after create instance Telem()")
+        
+        clearChartRecData()
 
         //note selectedPlaneID is handled in MedidoAircraft.swift
         tele.selectedPlaneName = UserDefaults.standard.string(forKey: "selName") ?? "Unknown Aircraft"

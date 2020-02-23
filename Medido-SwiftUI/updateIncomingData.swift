@@ -30,10 +30,37 @@ class Telem: ObservableObject {
     @Published var selectedPlaneID: UUID!
     @Published var BLEConnected = false
     @Published var isMetric: Bool = false
+    @Published var xp: [Double] = []
+    @Published var yp: [Double] = []
+    @Published var zp: [Double] = []
+    @Published var msgStr: String = ""
 }
 
 
 var icount: Int = 0
+
+func setInfoMessage(msg: String) {
+    tele.msgStr = msg
+    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+        tele.msgStr = ""
+    }
+}
+
+func clearChartRecData () {
+    if tele.xp.count > 0 {
+        for i in 0 ..< tele.xp.count {
+            tele.xp[i] = 0.0
+            tele.yp[i] = 0.0
+            tele.zp[i] = 0.0
+        }
+    }
+    tele.xp = []
+    tele.yp = []
+    tele.zp = []
+    tele.xp.append(0.0)
+    tele.yp.append(0.0)
+    tele.zp.append(0.0)
+}
 
 func updateIncomingData () {
     //print("Incoming data")
@@ -90,10 +117,22 @@ func updateIncomingData () {
         if let vf = Double(valueArray[1]) {
             switch valName {
             case "rTIM":
-                tele.runningTime = vf
                 let rtmins = floor(vf / 60.0)
                 let rtsecs = vf - rtmins * 60
                 tele.runningTimeString = String(format: "%02.0f:%02.0f", rtmins, rtsecs)
+                
+                if vf != tele.runningTime { // don't add points to chart recorder data unless we're running
+                    if tele.xp.count >= 1000 {
+                        tele.xp.remove(at: 0)
+                        tele.yp.remove(at: 0)
+                        tele.zp.remove(at: 0)
+                    }
+                    tele.xp.append(vf)
+                    tele.yp.append(tele.flowRate)
+                    tele.zp.append(tele.pressPSI)
+                    tele.runningTime = vf
+                }
+
                 //print("runningTime \(vf)")
             case "pPSI":
                 if tele.isMetric {
@@ -106,9 +145,9 @@ func updateIncomingData () {
                 tele.pumpSpeed = 100.0 * vf / 1023.0
             case "fCNT":
                 if tele.isMetric {
-                    tele.fuelFlow = vf
-                } else {
                     tele.fuelFlow = vf * 1.77 / 60
+                } else {
+                    tele.fuelFlow = vf
                 }
                 //print("fuelFlow \(vf)")
                 if tele.selectedPlaneTankCap > 0 {
@@ -119,7 +158,7 @@ func updateIncomingData () {
                             utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
                             utterance.rate = 0.5
                             synth.speak(utterance)
-                            print("Auto off at \(tele.selectedPlaneTankCap) oz")
+                            setInfoMessage(msg: String(format: "Auto off at %.1f oz", tele.selectedPlaneTankCap) )
                             writeValue(data: "(Off)")
                         }
                         autoOff = true
@@ -127,9 +166,9 @@ func updateIncomingData () {
                 }
             case "fRAT":
                 if tele.isMetric {
-                    tele.flowRate = vf
-                } else {
                     tele.flowRate = vf * 1.77 / 60
+                } else {
+                    tele.flowRate = vf
                 }
                 //print("flowRate \(vf)")
             case "Batt":
@@ -139,9 +178,26 @@ func updateIncomingData () {
                 //print("Batt: \(tele.battVolt) | \(vf) | \(bco)")
                 if bco > 1 && tele.battVolt > 0.0 && (tele.battVolt < (Double(bco) / 10.0) ) {
                     print("Powering off, bco: \(bco)")
+                    setInfoMessage(msg: String(format: "Auto power off. Pump Battery at %.1fV", tele.battVolt) )
                     writeValue(data: "(PwrOff)")
                 }
                 break
+            case "pSTP":
+                print("pSTP") // got notification of pulses on piss tank .. code here to take action
+            case "fDEL":
+                //if vf != 0.0 {
+                //    print("fDEL: \(vf)")
+                //}
+                break
+            case "fDET":
+                //if vf != 0.0 {
+                //    print("fDET: \(vf)")
+                //}
+                break
+            case "cBAD":
+                if vf != 0.0 {
+                    print("cBAD: \(vf)")
+                }
             case "Heap":
                 //print("heap: \(vf)")
                 break

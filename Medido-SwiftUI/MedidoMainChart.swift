@@ -1,15 +1,16 @@
 //
-//  MedidoMain.swift
+//  MedidoMainChart.swift
+//  Medido-SwiftUI
 //
-//
-//  Created by David McQueeney on 1/19/20.
+//  Created by David Mcqueeney on 2/22/20.
 //  Copyright © 2020 David McQueeney. All rights reserved.
 //
+
 
 import SwiftUI
 import Combine
 
-struct MedidoMain: View {
+struct MedidoMainChart: View {
     
     @State private var sMaxPress: Double = 0.0
     @State private var sMaxSpeed: Double = 0.0
@@ -24,29 +25,12 @@ struct MedidoMain: View {
     
     var body: some View {
         VStack {
-            ZStack {
-                HStack {
-                    VStack {
-                        if tel.isMetric == false {
-                            Gauge(value: self.tel.flowRate, title: "Flow Rate", units: "oz/min", labels: [-60, -40, -20, 0, 20, 40, 60], minValue: -60, maxValue: 60).foregroundColor(.blue)//.border(Color.yellow)
-                        } else {
-                            Gauge(value: self.tel.flowRate, title: "Flow Rate", units: "L/min", labels: [-2, -1, 0, 1, 2], minValue: -2, maxValue: 2).foregroundColor(.blue)//.border(Color.yellow)
-                        }
-                    }
-                    VStack {
-                        if tel.isMetric == false {
-                            Gauge(value: self.tel.pressPSI, title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0).foregroundColor(.yellow)//.border(Color.yellow)
-                        } else {
-                            Gauge(value: self.tel.pressPSI, title: "Pressure", units: "mBar", labels: [0, 200, 400, 600, 800, 1000], minValue: 0.0, maxValue: 1000.0).foregroundColor(.yellow)//.border(Color.yellow)
-                        }
-                    }
-                }
-                if tel.BLEConnected {
-                    Text("BLE").offset(y: -70).foregroundColor(Color.blue).font(.system(size: 18))
-                } else {
-                    Text("BLE").offset(y: -70).foregroundColor(Color.red).font(.system(size: 18))
-                }
-            }
+            chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
+                          XP: tel.xp, YP: tel.yp, ZP: tel.zp,
+                          xrange: 120.0, nlabel: 6,
+                          ymin: -60.0, ymax: 60.0, ylabel: "Flow (oz/min) [-60,60]: ", yvalue: tel.flowRate, ycolor: Color.blue,
+                          zmin: 0.0,   zmax: 2.0,  zlabel: "Pressure (psi) [0,2]: ",   zvalue: tel.pressPSI, zcolor: Color.yellow
+            )
             if tel.isMetric == false {
                 Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%0.1f") oz)").font(.system(size: 20))
                     .padding(5)
@@ -92,9 +76,9 @@ struct MedidoMain: View {
                     // user defaults is persistence model for cal factor, send it each time pumping is commanded
                     // to be sure the correct cal factor is being used
                     let ppoE = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
+                    clearChartRecData()
                     writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
                     writeValue(data: "(Empty)")
-                    clearChartRecData()
                 }){
                     Text("Empty")
                         .font(.system(size: fsize))
@@ -125,9 +109,9 @@ struct MedidoMain: View {
                     // to be sure the correct cal factor is being used
                     autoOff = false
                     let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
+                    clearChartRecData()
                     writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
                     writeValue(data: "(Fill)")
-                    clearChartRecData()
                 }){
                     Text("Fill")
                         .font(.system(size: fsize))
@@ -152,10 +136,8 @@ struct MedidoMain: View {
                 }.padding()//.border(Color.purple)
                 Spacer()
                 Button(action: {
-                    writeValue(data: "(Clear)")
                     clearChartRecData()
-                    // TESTING!!!
-                    setInfoMessage(msg: "This is a test .. CLEAR!")
+                    writeValue(data: "(Clear)")
                 }){
                     Text("Clear")
                         .frame(width: 70)
