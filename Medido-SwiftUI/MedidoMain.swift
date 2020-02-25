@@ -30,14 +30,14 @@ struct MedidoMain: View {
                         if tel.isMetric == false {
                             Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-60, -40, -20, 0, 20, 40, 60], minValue: -60, maxValue: 60).foregroundColor(.blue)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.flowRate*1000, fmtstr: "%.0f", title: "Flow Rate", units: "l/min", labels: [-2, -1, 0, 1, 2], minValue: -2, maxValue: 2).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.0f", title: "Flow Rate", units: "l/min", labels: [-2, -1, 0, 1, 2], minValue: -2, maxValue: 2).foregroundColor(.blue)//.border(Color.yellow)
                         }
                     }
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.pressPSI, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0).foregroundColor(.yellow)//.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0).foregroundColor(.yellow)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.pressPSI*1000, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8).foregroundColor(.yellow)//.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB/1000.0, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8).foregroundColor(.yellow)//.border(Color.yellow)
                         }
                     }
                 }
@@ -62,7 +62,7 @@ struct MedidoMain: View {
             if tel.isMetric == false {
                 Slider(value: $sMaxPress, in: 0...10, step: 0.1) { ss in
                     self.tel.sliderPressure = Int(self.sMaxPress * 10)
-                    writeValue(data: "(Prs: \(self.tel.sliderPressure)")
+                    writeValue(data: "(Prs: \(self.tel.sliderPressure))")
                 }
                 .frame(width: sW, height: sH)
                 .padding(5)
@@ -71,11 +71,11 @@ struct MedidoMain: View {
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.1f") PSI").font(.system(size: 15))
             } else {
                 Slider(value: $sMaxPress, in: 0...1000, step: 10.0) { ss in
-                    self.tel.sliderPressure = Int(self.sMaxPress * 14.5 / 1000 * 10)
-                    if self.tel.sliderPressure > 15 { // just in case...
-                        self.tel.sliderPressure = 15
+                    self.tel.sliderPressure = Int(self.sMaxPress * (14.5 / 1000) * 10)
+                    if self.tel.sliderPressure > 145 { // just in case... limit to 14.5 psi (sent as x10 in an Int)
+                        self.tel.sliderPressure = 145
                     }
-                    writeValue(data: "(Prs: \(self.tel.sliderPressure)")
+                    writeValue(data: "(Prs: \(self.tel.sliderPressure))")
                 }
                 .frame(width: sW, height: sH)
                 .padding(5)
@@ -86,7 +86,7 @@ struct MedidoMain: View {
             
             Slider(value: $sMaxSpeed, in: 0...100, step: 0.1) { ss in
                 self.tel.sliderSpeed = Int(self.sMaxSpeed)
-                writeValue(data: "(Spd: \(self.tel.sliderSpeed)")
+                writeValue(data: "(Spd: \(self.tel.sliderSpeed))")
             }
             .frame(width: sW, height: sH)
             .padding(5)
@@ -146,13 +146,15 @@ struct MedidoMain: View {
                         //.border(Color.yellow)
                 }
             }.padding()
-            HStack (alignment: .bottom){
+
+            if tel.isMetric == false {
+                Text("Flow Rate (oz/min): \(tele.flowRate, specifier: "%.1f")")
+            } else {
+                Text("Flow Rate (ml/min): \(tele.flowRate, specifier: "%.0f")")
+            }
+
+            HStack () {
                 VStack (alignment: .leading){
-                    if tel.isMetric == false {
-                        Text("Flow Rate (oz/min): \(tele.flowRate, specifier: "%.1f")")
-                    } else {
-                        Text("Flow Rate (ml/min): \(tele.flowRate, specifier: "%.0f")")
-                    }
                     //Spacer()
                     Text("Pump Speed: \(Int(tele.pumpSpeed), specifier: "%d") %")
                     //Spacer()
@@ -165,7 +167,7 @@ struct MedidoMain: View {
                     writeValue(data: "(Clear)")
                     clearChartRecData()
                     // TESTING!!!
-                    setInfoMessage(msg: "This is a test .. CLEAR!")
+                    //setInfoMessage(msg: "This is a test .. CLEAR!")
                 }){
                     Text("Clear")
                         .frame(width: 70)

@@ -14,7 +14,7 @@ import AVFoundation
 class Telem: ObservableObject {
     @Published var runningTime: Double = 0
     @Published var runningTimeString: String = "---"
-    @Published var pressPSI: Double = 0
+    @Published var pressPSI_mB: Double = 0
     @Published var pumpSpeed: Double = 0
     @Published var fuelFlow: Double = 0
     @Published var flowRate: Double = 0
@@ -43,7 +43,8 @@ var icount: Int = 0
 
 func setInfoMessage(msg: String) {
     tele.msgStr = msg
-    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+        //tele.msgStr = "🛩"
         tele.msgStr = ""
     }
 }
@@ -133,19 +134,19 @@ func updateIncomingData () {
                         tele.yp.remove(at: 0)
                         tele.zp.remove(at: 0)
                     }
-                    print("#, apppending: \(tele.xp.count), \(vf), \(tele.flowRate), \(tele.pressPSI)")
+                    //print("#, apppending: \(tele.xp.count), \(vf), \(tele.flowRate), \(tele.pressPSI_mB)")
                     tele.xp.append(vf)
                     tele.yp.append(tele.flowRate)
-                    tele.zp.append(tele.pressPSI)
+                    tele.zp.append(tele.pressPSI_mB)
                     tele.runningTime = vf
                 }
 
                 //print("runningTime \(vf)")
             case "pPSI":
                 if tele.isMetric {
-                    tele.pressPSI = vf / (14.503 * 1000.0) // metric: store as mBar
+                    tele.pressPSI_mB = (vf / 14.503) * 1000.0 // metric: store as mBar
                 } else {
-                    tele.pressPSI = vf
+                    tele.pressPSI_mB = vf
                 }
                 //print("pressPSI \(vf)")
             case "rPWM":

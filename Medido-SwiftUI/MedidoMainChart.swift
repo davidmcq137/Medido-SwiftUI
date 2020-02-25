@@ -25,12 +25,21 @@ struct MedidoMainChart: View {
     
     var body: some View {
         VStack {
-            chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
-                          XP: tel.xp, YP: tel.yp, ZP: tel.zp,
-                          xrange: 120.0, nlabel: 6,
-                          ymin: -60.0, ymax: 60.0, ylabel: "Flow (oz/min) [-60,60]: ", yvalue: tel.flowRate, ycolor: Color.blue,
-                          zmin: 0.0,   zmax: 2.0,  zlabel: "Pressure (psi) [0,2]: ",   zvalue: tel.pressPSI, zcolor: Color.yellow
-            )
+            if !tel.isMetric {
+                chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
+                              XP: tel.xp, YP: tel.yp, ZP: tel.zp,
+                              xrange: 120.0, nlabel: 6,
+                              ymin: -60.0, ymax: 60.0, ylabel: "Flow (oz/min) [-60,60]: ", yvalue: tel.flowRate, ycolor: Color.blue,
+                              zmin: 0.0,   zmax: 2.0,  zlabel: "Press(psi) [0,2]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                )
+            } else {
+                chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
+                              XP: tel.xp, YP: tel.yp, ZP: tel.zp,
+                              xrange: 120.0, nlabel: 6,
+                              ymin: -2000.0, ymax: 2000.0, ylabel: "F (ml/min) [-2K,2K]: ", yvalue: tel.flowRate, ycolor: Color.blue,
+                              zmin: 0.0,   zmax: 200.0,  zlabel: "P (mB) [0,200]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                )
+            }
             if tel.isMetric == false {
                 Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.1f") oz)").font(.system(size: 20))
                     .padding(5)
@@ -46,7 +55,7 @@ struct MedidoMainChart: View {
             if tel.isMetric == false {
                 Slider(value: $sMaxPress, in: 0...10, step: 0.1) { ss in
                     self.tel.sliderPressure = Int(self.sMaxPress * 10)
-                    writeValue(data: "(Prs: \(self.tel.sliderPressure)")
+                    writeValue(data: "(Prs: \(self.tel.sliderPressure))")
                 }
                 .frame(width: sW, height: sH)
                 .padding(5)
@@ -55,11 +64,11 @@ struct MedidoMainChart: View {
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.1f") PSI").font(.system(size: 15))
             } else {
                 Slider(value: $sMaxPress, in: 0...1000, step: 10.0) { ss in
-                    self.tel.sliderPressure = Int(self.sMaxPress * 14.5 / 1000 * 10)
-                    if self.tel.sliderPressure > 15 { // just in case...
-                        self.tel.sliderPressure = 15
+                    self.tel.sliderPressure = Int(self.sMaxPress * (14.5 / 1000) * 10) // sent units of psi * 10
+                    if self.tel.sliderPressure > 145 { // just in case...
+                        self.tel.sliderPressure = 145  // value sent as 10x in an Int
                     }
-                    writeValue(data: "(Prs: \(self.tel.sliderPressure)")
+                    writeValue(data: "(Prs: \(self.tel.sliderPressure))")
                 }
                 .frame(width: sW, height: sH)
                 .padding(5)
@@ -70,7 +79,7 @@ struct MedidoMainChart: View {
             
             Slider(value: $sMaxSpeed, in: 0...100, step: 0.1) { ss in
                 self.tel.sliderSpeed = Int(self.sMaxSpeed)
-                writeValue(data: "(Spd: \(self.tel.sliderSpeed)")
+                writeValue(data: "(Spd: \(self.tel.sliderSpeed))")
             }
             .frame(width: sW, height: sH)
             .padding(5)
@@ -131,13 +140,15 @@ struct MedidoMainChart: View {
                         //.border(Color.yellow)
                 }
             }.padding()
-            HStack (alignment: .bottom){
+
+            if !tele.isMetric {
+                Text("Flow Rate (oz/min): \(tele.flowRate, specifier: "%.1f")")
+            } else {
+                Text("Flow Rate (ml/min): \(tele.flowRate, specifier: "%.0f")")
+            }
+
+            HStack () {
                 VStack (alignment: .leading){
-                    if !tele.isMetric {
-                        Text("Flow Rate (oz/min): \(tele.flowRate, specifier: "%.1f")")
-                    } else {
-                        Text("Flow Rate (ml/min): \(tele.flowRate, specifier: "%.0f")")
-                    }
                     //Spacer()
                     Text("Pump Speed: \(Int(tele.pumpSpeed), specifier: "%d") %")
                     //Spacer()
