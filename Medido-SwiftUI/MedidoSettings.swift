@@ -77,6 +77,24 @@ struct MedidoSettings: View {
                 })
                 Text(" \(battCutoff, specifier: "%0.2f")")
             }.padding()
+            
+            HStack {
+                Stepper(onIncrement: {
+                    if tele.maxPWM + 1 <= 1023 {
+                        tele.maxPWM = tele.maxPWM + 1
+                        self.defaults.set(tele.maxPWM, forKey: "maxPWM")
+                    }
+                }, onDecrement: {
+                    if tele.maxPWM - 1 >= 50 {
+                        tele.maxPWM = tele.maxPWM - 1
+                        self.defaults.set(tele.maxPWM, forKey: "maxPWM")
+                    }
+                }, label: { Text("Maximum PWM")
+                })
+                Text(" \(tele.maxPWM, specifier: "%d")")
+            }.padding()
+            
+            Text("Pump Current (A): \(tele.motorCurrent, specifier: "%.2f")").padding()
         }
     }
 }

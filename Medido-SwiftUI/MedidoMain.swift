@@ -99,6 +99,7 @@ struct MedidoMain: View {
                     // to be sure the correct cal factor is being used
                     let ppoE = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
                     writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
+                    writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
                     writeValue(data: "(Empty)")
                     clearChartRecData()
                 }){
@@ -132,6 +133,7 @@ struct MedidoMain: View {
                     autoOff = false
                     let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
                     writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
+                    writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
                     writeValue(data: "(Fill)")
                     clearChartRecData()
                 }){

@@ -94,6 +94,7 @@ struct MedidoMainChart: View {
                     let ppoE = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
                     clearChartRecData()
                     writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
+                    writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
                     writeValue(data: "(Empty)")
                 }){
                     Text("Empty")
@@ -127,6 +128,7 @@ struct MedidoMainChart: View {
                     let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
                     clearChartRecData()
                     writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
+                    writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
                     writeValue(data: "(Fill)")
                 }){
                     Text("Fill")

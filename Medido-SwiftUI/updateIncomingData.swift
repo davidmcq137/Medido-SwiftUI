@@ -36,6 +36,8 @@ class Telem: ObservableObject {
     @Published var msgStr: String = ""
     @Published var sliderSpeed: Int = 0
     @Published var sliderPressure: Int = 0
+    @Published var motorCurrent: Double = 0
+    @Published var maxPWM: Int = 870 // 1023 * 85%
 }
 
 
@@ -217,6 +219,9 @@ func updateIncomingData () {
                 if vf != 0.0 {
                     print("cBAD: \(vf)")
                 }
+            case "Curr":
+                print("vf/100, curr: \(vf / 100), \( (vf / 100) / 0.020)")
+                tele.motorCurrent = (vf / 100) / 0.020 // per Pololu 18V17 manual: current = 20mV/A. voltage sent with offset subtr and x100
             case "Heap":
                 //print("heap: \(vf)")
                 break
