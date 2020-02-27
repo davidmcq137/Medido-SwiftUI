@@ -15,11 +15,15 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Medido would like to use Bluetooth BLE to connect to the fueling station</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Medido would like to use Bluetooth BLE to connect to the fueling station </string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -43,30 +47,17 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Medido would like to use Bluetooth BLE</string>
-	<key>UIUserInterfaceStyle</key>
-	<string>Dark</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Medidi would like to access your GPS location</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Medido would like to access your GPS location</string>
-	<key>NSLocationUsageDescription</key>
-	<string>Medido would like to access your GPS location</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Medido would like to access your GPS location</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
 </dict>
 </plist>

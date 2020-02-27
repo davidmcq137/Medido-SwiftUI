@@ -38,6 +38,7 @@ class Telem: ObservableObject {
     @Published var sliderPressure: Int = 0
     @Published var motorCurrent: Double = 0
     @Published var maxPWM: Int = 870 // 1023 * 85%
+    @Published var overFlowShutoff:  Bool = false
 }
 
 
@@ -152,7 +153,7 @@ func updateIncomingData () {
                 }
                 //print("pressPSI \(vf)")
             case "rPWM":
-                tele.pumpSpeed = 100.0 * vf / 1023.0
+                tele.pumpSpeed = 100.0 * vf / Double(tele.maxPWM)
             case "fCNT":
                 if tele.isMetric {
                     vfa = vf * 29.574       // metric: store as ml
@@ -203,8 +204,10 @@ func updateIncomingData () {
                 }
                 break
             case "pSTP":
-                setInfoMessage(msg: "Pump off: Overflow detected")
-                writeValue(data: "(Off)")
+                if tele.overFlowShutoff {
+                    setInfoMessage(msg: "Pump off: Overflow detected")
+                    writeValue(data: "(Off)")
+                }
             case "fDEL":
                 //if vf != 0.0 {
                 //    print("fDEL: \(vf)")
@@ -216,12 +219,13 @@ func updateIncomingData () {
                 //}
                 break
             case "cBAD":
-                if vf != 0.0 {
-                    print("cBAD: \(vf)")
-                }
+                //if vf != 0.0 {
+                    //print("cBAD: \(vf)")
+                //}
+                break
             case "Curr":
-                print("vf/100, curr: \(vf / 100), \( (vf / 100) / 0.020)")
-                tele.motorCurrent = (vf / 100) / 0.020 // per Pololu 18V17 manual: current = 20mV/A. voltage sent with offset subtr and x100
+                //print("vf/100, curr: \(vf / 100), \( (vf / 100) / 0.030)")
+                tele.motorCurrent = (vf / 100) / 0.030 // per Pololu 18V17 manual: current = 20mV/A. voltage sent with offset subtr and x100. observed factor closer to 30mV/A
             case "Heap":
                 //print("heap: \(vf)")
                 break

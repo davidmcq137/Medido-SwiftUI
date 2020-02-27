@@ -42,6 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tele.selectedPlaneTankCap = UserDefaults.standard.double(forKey: "selTankCap")
         
         tele.isMetric = UserDefaults.standard.bool(forKey: "isMetric") // if not exist, returns false .. perfect :-)
+        tele.overFlowShutoff = UserDefaults.standard.bool(forKey: "overFlowShutoff") // if not exist, returns false .. perfect :-)
         
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

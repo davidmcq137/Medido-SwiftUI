@@ -28,9 +28,13 @@ struct MedidoSettings: View {
         VStack (alignment: .leading){
             VStack {
                 Toggle(isOn: $tel.isMetric) {
-                    Text("Metric Units Displayed\(checkBool(tgl: tel.isMetric))")
+                    Text("Metric Units Displayed\(checkBoolMetric(tgl: tel.isMetric))")
                 }.padding()
-                                
+            }
+            VStack {
+                Toggle(isOn: $tel.overFlowShutoff) {
+                    Text("Overflow Shutoff Enabled\(checkBoolOverflow(tgl: tel.overFlowShutoff))")
+                }.padding()
             }
             HStack {
                 Stepper(onIncrement: {
@@ -99,9 +103,15 @@ struct MedidoSettings: View {
     }
 }
 
-private func checkBool(tgl: Bool) -> String {
-    print("tgl is: \(tgl)")
+private func checkBoolMetric(tgl: Bool) -> String {
+    //print("tgl is: \(tgl)")
     UserDefaults.standard.set(tgl, forKey: "isMetric")
+    return("")
+
+}
+private func checkBoolOverflow(tgl: Bool) -> String {
+    //print("tgl is: \(tgl)")
+    UserDefaults.standard.set(tgl, forKey: "overFlowShutoff")
     return("")
 }
 /*
