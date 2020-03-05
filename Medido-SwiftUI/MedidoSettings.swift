@@ -13,11 +13,11 @@ struct MedidoSettings: View {
     @State private var ppoFill: Double = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
     @State private var ppoEmpty: Double = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
     @State private var battCutoff: Double = Double(UserDefaults.standard.integer(forKey: "battCutoff")) / 10.0
-    @EnvironmentObject var tel: Telem
 
-    // allow +/- 10 from default value of 104 pulse per oz
-    let ppoMax = 134.0
-    let ppoMin = 74.0
+     @EnvironmentObject var tel: Telem
+
+    let ppoMax = 200.0
+    let ppoMin = 20.0
     
     // default battery cutoff 3V per cell * 3 cells = 9V
     
@@ -34,6 +34,11 @@ struct MedidoSettings: View {
             VStack {
                 Toggle(isOn: $tel.overFlowShutoff) {
                     Text("Overflow Shutoff Enabled\(checkBoolOverflow(tgl: tel.overFlowShutoff))")
+                }.padding()
+            }
+            VStack {
+                Toggle(isOn: $tel.isSPIpump) {
+                    Text("Is older SPI pump\(checkBoolSPIpump(tgl: tel.isSPIpump))")
                 }.padding()
             }
             HStack {
@@ -109,9 +114,16 @@ private func checkBoolMetric(tgl: Bool) -> String {
     return("")
 
 }
+
 private func checkBoolOverflow(tgl: Bool) -> String {
     //print("tgl is: \(tgl)")
     UserDefaults.standard.set(tgl, forKey: "overFlowShutoff")
+    return("")
+}
+
+private func checkBoolSPIpump(tgl: Bool) -> String {
+    //print("tgl is: \(tgl)")
+    UserDefaults.standard.set(tgl, forKey: "isSPIpump")
     return("")
 }
 /*

@@ -39,6 +39,7 @@ class Telem: ObservableObject {
     @Published var motorCurrent: Double = 0
     @Published var maxPWM: Int = 870 // 1023 * 85%
     @Published var overFlowShutoff:  Bool = false
+    @Published var isSPIpump = false
 }
 
 
@@ -124,6 +125,11 @@ func updateIncomingData () {
         
         //print(valName, valValue)
         
+        if valName == "Text" {
+            print("Text: \(valueArray[1])")
+            continue
+        }
+        
         if let vf = Double(valueArray[1]) {
             switch valName {
             case "rTIM":
@@ -132,7 +138,8 @@ func updateIncomingData () {
                 tele.runningTimeString = String(format: "%02.0f:%02.0f", rtmins, rtsecs)
                 
                 if vf != tele.runningTime { // don't add points to chart recorder data unless we're running
-                    if tele.xp.count >= 1000 {
+//                    if tele.xp.count >= 120 { // has to be equal to xrange .. go fix this properly...
+                    if vf > tele.xp.first! + 120.00 {
                         tele.xp.remove(at: 0)
                         tele.yp.remove(at: 0)
                         tele.zp.remove(at: 0)

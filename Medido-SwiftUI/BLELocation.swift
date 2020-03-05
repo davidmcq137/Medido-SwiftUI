@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 import CoreBluetooth
-import CoreLocation
+//import CoreLocation
 import Combine
 import AVFoundation
 
@@ -34,7 +34,7 @@ var horizontalAccuracyGPS: Double?
 var synth: AVSpeechSynthesizer!
 
 
-class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate, CBPeripheralDelegate, CLLocationManagerDelegate {
+class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate, CBPeripheralDelegate { //}, CLLocationManagerDelegate {
     
     var centralManager: CBCentralManager!
     static var blelocation = BLELocation()
@@ -123,6 +123,7 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         }
     }
     
+    /*
     let manager = CLLocationManager()
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -165,6 +166,7 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Failed to find user's location: \(error.localizedDescription)")
     }
+    */
     
     func MedidoStartup() {
         
@@ -177,9 +179,9 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         synth.speak(utterance)
 
         // setup code to get gps location .. not used in medido pump
-        manager.delegate = self
-        manager.requestAlwaysAuthorization()
-        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        //manager.delegate = self
+        //manager.requestAlwaysAuthorization()
+        //manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         //manager.requestLocation()
         
         // observed default for Sandor's flow sensors is 103-106 pulse per oz, set default to 104

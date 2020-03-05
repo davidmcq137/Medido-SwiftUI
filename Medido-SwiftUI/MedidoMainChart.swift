@@ -29,14 +29,14 @@ struct MedidoMainChart: View {
                 chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
                               XP: tel.xp, YP: tel.yp, ZP: tel.zp,
                               xrange: 120.0, nlabel: 6,
-                              ymin: -60.0, ymax: 60.0, ylabel: "Flow (oz/min) [-60,60]: ", yvalue: tel.flowRate, ycolor: Color.blue,
+                              ymin: -10.0, ymax: 10.0, ylabel: "Flow (oz/min) [-10,10]: ", yvalue: tel.flowRate, ycolor: Color.blue,
                               zmin: 0.0,   zmax: 2.0,  zlabel: "Press(psi) [0,2]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
                 )
             } else {
                 chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
                               XP: tel.xp, YP: tel.yp, ZP: tel.zp,
                               xrange: 120.0, nlabel: 6,
-                              ymin: -2000.0, ymax: 2000.0, ylabel: "F (ml/min) [-2K,2K]: ", yvalue: tel.flowRate, ycolor: Color.blue,
+                              ymin: -500.0, ymax: 500.0, ylabel: "F (ml/min) [-500,500]: ", yvalue: tel.flowRate, ycolor: Color.blue,
                               zmin: 0.0,   zmax: 200.0,  zlabel: "P (mB) [0,200]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
                 )
             }
@@ -93,8 +93,10 @@ struct MedidoMainChart: View {
                     // to be sure the correct cal factor is being used
                     let ppoE = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
                     clearChartRecData()
-                    writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
-                    writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
+                    if tele.isSPIpump == false {
+                        writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
+                        writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
+                    }
                     writeValue(data: "(Empty)")
                 }){
                     Text("Empty")
@@ -127,8 +129,10 @@ struct MedidoMainChart: View {
                     autoOff = false
                     let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
                     clearChartRecData()
-                    writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
-                    writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
+                    if tele.isSPIpump == false {
+                        writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
+                        writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
+                    }
                     writeValue(data: "(Fill)")
                 }){
                     Text("Fill")

@@ -11,7 +11,6 @@ import SwiftUI
 import UIKit
 import CoreData
 import CoreBluetooth
-import CoreLocation
 
 var container: NSPersistentContainer!
 
