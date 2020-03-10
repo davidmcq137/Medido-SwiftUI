@@ -86,14 +86,14 @@ private struct graphLabels: View {
 }
 
 private func labelpos(range: Double, nlab: Int, seq: Int, XP: [Double], wid: CGFloat, hgt: CGFloat) -> CGPoint {
-    print("labelpos")
+    //print("labelpos")
     if XP.count > 0 {
         let intPart = Double(Int(XP.first! / (range / Double(nlab)))) * (range / Double(nlab))
         let frac = (XP.first! - Double(intPart)) / (range / Double(nlab))
         let fracPix = frac * Double(wid) / Double(nlab)
         //print("seq: \(seq), XP.first: \(XP.first!), intPart: \(intPart), frac: \(frac), fracPix: \(fracPix)")
         //print("returning: \( -fracPix + Double(seq) * Double(wid) / Double(nlab))")
-        print("hgt: \(hgt) wid: \(wid)")
+        //print("hgt: \(hgt) wid: \(wid)")
         return(CGPoint(x: -fracPix + Double(seq) * Double(wid) / Double(nlab), y: Double(hgt) + 10 ))
     } else {
         return(CGPoint(x:0, y:0))
@@ -102,7 +102,7 @@ private func labelpos(range: Double, nlab: Int, seq: Int, XP: [Double], wid: CGF
 }
 
 private func labeltext(range: Double, nlab: Int, seq: Int, XP: [Double]) -> String {
-    print("labeltext")
+    //print("labeltext")
     if XP.count > 0 {
         let intPart = Double(Int(XP.first! / (range / Double(nlab)))) * range / Double(nlab)
         //let frac = (XP.first! - Double(intPart)) / 10.0
@@ -123,7 +123,7 @@ private struct graphRect: Shape {
     
     func path(in rect: CGRect) -> Path {
         cwid = rect.width
-        print("cwid: \(cwid)")
+        //print("cwid: \(cwid)")
         //print("rect.minX, rect.maxX, rect.minY, rect.maxY, rect.width, rect.height", rect.minX, rect.maxX, rect.minY, rect.maxY, rect.width, rect.height)
         let mult = 1.0
         var path = Path()
@@ -138,7 +138,7 @@ private struct graphGrid: Shape {
     let vgrid: Int
     
     func path(in rect: CGRect) -> Path {
-        print("graphGrid")
+        //print("graphGrid")
         var path = Path()
         for i in 1 ... vgrid {
             path.move(to: CGPoint(x: rect.minX, y:rect.minY + CGFloat(i) * rect.height/CGFloat(vgrid)))
@@ -168,7 +168,7 @@ private struct graphData: Shape {
         var yt: Double
         let eps = 1.0E-6
 
-        print("graphdata")
+        //print("graphdata")
 
         for i in 0 ..< XP.count {
             //xp =  rect.minX + CGFloat( ( (xrange + 1) / xrange) * (XP[i] - XP.first!) / xrange) * rect.width
