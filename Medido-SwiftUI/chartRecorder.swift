@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+fileprivate var cwid: CGFloat = 0
+
 struct chartRecorder: View {
     
     let aspect: CGFloat
@@ -31,21 +33,27 @@ struct chartRecorder: View {
     
     var body: some View {
         VStack(spacing: 5) {
-            HStack (spacing: 0){
-                Text(ylabel).foregroundColor(ycolor).font(.system(size: 12))
-                Text("\(yvalue, specifier: "%.2f")").foregroundColor(ycolor).font(.system(size: 12))
-                Spacer()
-                Text(zlabel).foregroundColor(zcolor).font(.system(size: 12))
-                Text("\(zvalue, specifier: "%.2f")").foregroundColor(zcolor).font(.system(size: 12))
-            }.padding(.horizontal)
-            ZStack {
-                graphRect().aspectRatio(aspect, contentMode: .fit)
-                graphGrid(hgrid: hgrid, vgrid: vgrid).aspectRatio(aspect, contentMode: .fit)
-                graphData(XP: XP, YP: YP, xrange: xrange, ymin: ymin, ymax: ymax, linewidth: 2).aspectRatio(aspect, contentMode: .fit).foregroundColor(ycolor).clipped()
-                graphData(XP: XP, YP: ZP, xrange: xrange, ymin: zmin, ymax: zmax, linewidth: 2).aspectRatio(aspect, contentMode: .fit).foregroundColor(zcolor).clipped()
-            }
-            graphLabels(XP: XP, xrange: xrange, nlabel: nlabel).frame(height: 15).padding(.horizontal)
-        }//.padding()//.border(Color.yellow)
+            /*HStack (spacing: 0){
+             Text(self.ylabel).foregroundColor(self.ycolor).font(.system(size: 12))
+             Text("\(self.yvalue, specifier: "%.2f")").foregroundColor(self.ycolor).font(.system(size: 12))
+             Spacer()
+             Text(self.zlabel).foregroundColor(self.zcolor).font(.system(size: 12))
+             Text("\(self.zvalue, specifier: "%.2f")").foregroundColor(self.zcolor).font(.system(size: 12))
+            }.padding(.horizontal)*/
+            
+            ZStack (alignment: .top){
+                HStack (spacing: 0){
+                    Text(self.ylabel).foregroundColor(self.ycolor).font(.system(size: 12))
+                    Spacer()
+                    Text(self.zlabel).foregroundColor(self.zcolor).font(.system(size: 12))
+                }.offset(y: -20)
+                graphRect().aspectRatio(self.aspect, contentMode: .fill)
+                graphGrid(hgrid: self.hgrid, vgrid: self.vgrid).aspectRatio(self.aspect, contentMode: .fill)
+                graphData(XP: self.XP, YP: self.YP, xrange: self.xrange, ymin: self.ymin, ymax: self.ymax, linewidth: 2).aspectRatio(self.aspect, contentMode: .fill).foregroundColor(self.ycolor).clipped()
+                graphData(XP: self.XP, YP: self.ZP, xrange: self.xrange, ymin: self.zmin, ymax: self.zmax, linewidth: 2).aspectRatio(self.aspect, contentMode: .fill).foregroundColor(self.zcolor).clipped()
+                graphLabels(XP: self.XP, xrange: self.xrange, nlabel: self.nlabel, wid: 0, hgt: 0)
+            }.padding()
+        }
     }
 }
 
@@ -55,32 +63,38 @@ private struct graphLabels: View {
     private let XP: [Double]
     private let xrange: Double
     private let nlabel: Int
+    private let wid: CGFloat
+    private let hgt: CGFloat
     
-    init(XP: [Double], xrange: Double, nlabel: Int) {
+    init(XP: [Double], xrange: Double, nlabel: Int, wid: CGFloat, hgt: CGFloat) {
         self.XP = XP
         self.xrange = xrange
         self.nlabel = nlabel
+        self.wid = wid
+        self.hgt = hgt
     }
     
     var body: some View {
         HStack {
             GeometryReader { (gR) in
                 ForEach(0 ... self.nlabel+1, id: \.self) { i in
-                    Text(labeltext(range: self.xrange, nlab: self.nlabel, seq: i, XP: self.XP)).position(labelpos(range: self.xrange, nlab: self.nlabel, seq: i, XP: self.XP, wid: gR.size.width )).font(.system(size: 10)).clipped()
+                    Text(labeltext(range: self.xrange, nlab: self.nlabel, seq: i, XP: self.XP)).position(labelpos(range: self.xrange, nlab: self.nlabel, seq: i, XP: self.XP, wid: gR.size.width, hgt: gR.size.height)).font(.system(size: 10))//.clipped()
                 }
             }
         }
     }
 }
 
-private func labelpos(range: Double, nlab: Int, seq: Int, XP: [Double], wid: CGFloat) -> CGPoint {
+private func labelpos(range: Double, nlab: Int, seq: Int, XP: [Double], wid: CGFloat, hgt: CGFloat) -> CGPoint {
+    print("labelpos")
     if XP.count > 0 {
         let intPart = Double(Int(XP.first! / (range / Double(nlab)))) * (range / Double(nlab))
         let frac = (XP.first! - Double(intPart)) / (range / Double(nlab))
         let fracPix = frac * Double(wid) / Double(nlab)
         //print("seq: \(seq), XP.first: \(XP.first!), intPart: \(intPart), frac: \(frac), fracPix: \(fracPix)")
         //print("returning: \( -fracPix + Double(seq) * Double(wid) / Double(nlab))")
-        return(CGPoint(x: -fracPix + Double(seq) * Double(wid) / Double(nlab), y:7))
+        print("hgt: \(hgt) wid: \(wid)")
+        return(CGPoint(x: -fracPix + Double(seq) * Double(wid) / Double(nlab), y: Double(hgt) + 10 ))
     } else {
         return(CGPoint(x:0, y:0))
     }
@@ -88,6 +102,7 @@ private func labelpos(range: Double, nlab: Int, seq: Int, XP: [Double], wid: CGF
 }
 
 private func labeltext(range: Double, nlab: Int, seq: Int, XP: [Double]) -> String {
+    print("labeltext")
     if XP.count > 0 {
         let intPart = Double(Int(XP.first! / (range / Double(nlab)))) * range / Double(nlab)
         //let frac = (XP.first! - Double(intPart)) / 10.0
@@ -105,7 +120,10 @@ private func labeltext(range: Double, nlab: Int, seq: Int, XP: [Double]) -> Stri
 }
 
 private struct graphRect: Shape {
+    
     func path(in rect: CGRect) -> Path {
+        cwid = rect.width
+        print("cwid: \(cwid)")
         //print("rect.minX, rect.maxX, rect.minY, rect.maxY, rect.width, rect.height", rect.minX, rect.maxX, rect.minY, rect.maxY, rect.width, rect.height)
         let mult = 1.0
         var path = Path()
@@ -120,6 +138,7 @@ private struct graphGrid: Shape {
     let vgrid: Int
     
     func path(in rect: CGRect) -> Path {
+        print("graphGrid")
         var path = Path()
         for i in 1 ... vgrid {
             path.move(to: CGPoint(x: rect.minX, y:rect.minY + CGFloat(i) * rect.height/CGFloat(vgrid)))
@@ -148,7 +167,9 @@ private struct graphData: Shape {
         var yp: CGFloat
         var yt: Double
         let eps = 1.0E-6
-        
+
+        print("graphdata")
+
         for i in 0 ..< XP.count {
             //xp =  rect.minX + CGFloat( ( (xrange + 1) / xrange) * (XP[i] - XP.first!) / xrange) * rect.width
             xp =  rect.minX + CGFloat((XP[i] - XP.first!) / xrange) * rect.width

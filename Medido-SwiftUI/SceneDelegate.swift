@@ -40,6 +40,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //note selectedPlaneID is handled in MedidoAircraft.swift
         tele.selectedPlaneName = UserDefaults.standard.string(forKey: "selName") ?? "Unknown Aircraft"
         tele.selectedPlaneTankCap = UserDefaults.standard.double(forKey: "selTankCap")
+        tele.selectedPlaneMaxSpeed = UserDefaults.standard.double(forKey: "selSpeed")
+        tele.selectedPlaneMaxPressure = UserDefaults.standard.double(forKey: "selPressure")
+        
+        print("starting up .. selName: \(tele.selectedPlaneName)")
         
         tele.isMetric = UserDefaults.standard.bool(forKey: "isMetric") // if not exist, returns false .. perfect :-)
         tele.overFlowShutoff = UserDefaults.standard.bool(forKey: "overFlowShutoff") // if not exist, returns false .. perfect :-)

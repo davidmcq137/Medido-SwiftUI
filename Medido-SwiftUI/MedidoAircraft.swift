@@ -22,8 +22,11 @@ struct MedidoAircraft: View {
     ) var planes: FetchedResults<Aircraft>
     
     @State private var submenu =  false
+    @State private var editcurrent = false
     @State private var acname: String = ""
     @State private var tankcapy: String = ""
+    @State private var pumpspeed: String = ""
+    @State private var maxpressure: String = ""
     @State private var showingAlert = false
     @State private var selectedID: String? = UserDefaults.standard.string(forKey: "selUUID")
     @EnvironmentObject var tele: Telem
@@ -35,11 +38,36 @@ struct MedidoAircraft: View {
     
     var body: some View {
         VStack{
-            if self.submenu == true {
-                TextField("Aircraft Name", text: self.$acname).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
-                    .padding()
-                TextField("Capacity (oz)", text: self.$tankcapy).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
-                    .padding()
+            if submenu == true {
+                
+                VStack (spacing: 5){
+                    TextField("Name", text: self.$acname).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                    Text("Aircraft Name")
+                }.padding()
+                
+                VStack (spacing: 5) {
+                    if tele.isMetric == false {
+                        TextField("Capacity (oz)", text: self.$tankcapy).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                    } else {
+                        TextField("Capacity (ml)", text: self.$tankcapy).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                    }
+                    Text("Fuel Tank Capcity")
+                }.padding()
+                
+                VStack (spacing: 5) {
+                    TextField("Speed (0-100)%", text: self.$pumpspeed).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                    Text("Fuel Pump Speed")
+                }.padding()
+                
+                VStack (spacing: 5) {
+                    if tele.isMetric == false {
+                        TextField("Pressure (psi)", text: self.$maxpressure).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                    } else {
+                        TextField("Pressure (mBar)", text: self.$maxpressure).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                    }
+                    Text("Regulated Delivery Pressure")
+                }.padding()
+                
                 HStack{
                     Button(action: {
                         self.submenu = false
@@ -51,29 +79,88 @@ struct MedidoAircraft: View {
                     .cornerRadius(CGFloat(40))
                     .foregroundColor(Color.primary)
                     .padding()
-
+                    
                     Button(action: {
-                        if let tsd = Double(self.tankcapy) {
+                        
+                        if self.editcurrent == false {
+                            if self.pumpspeed == "" {
+                                print("setting pumpspeed default")
+                                self.pumpspeed = "100.0"
+                            }
+                            if self.maxpressure == "" {
+                                print("setting maxpressure default")
+                                if self.tele.isMetric == false {
+                                    self.maxpressure = "5.0"
+                                } else {
+                                    self.maxpressure = "0.5"
+                                }
+                            }
+                        } else {
+                            print("editcurrent")
+                        }
+                            
+                        print("before big if let")
+                        print("self.tankcapy: \(self.tankcapy)")
+                        print("self.pumpspeed: \(self.pumpspeed)")
+                        print("self.maxpressure: \(self.maxpressure)")
+
+                        if let tsd = Double(self.tankcapy), let ssd = Double(self.pumpspeed), let psd = Double(self.maxpressure) {
+                            print("tsd, ssd, psd: \(tsd), \(ssd), \(psd)")
                             if self.showingAlert == false {
                                 let plane = Aircraft(context: self.moc)
-                                plane.id = UUID()
+                                if self.editcurrent == false {
+                                    plane.id = UUID()
+                                } else {
+                                    for pl in self.planes { // delete the old one, we'll create a new one with the old values as defaults
+                                        if pl.id == self.tele.selectedPlaneID {
+                                            print("deleteing plane pl")
+                                            self.moc.delete(pl) // will save shortly... a few lines down
+                                        }
+                                    }
+                                    plane.id = UUID() // use a new UUID ... could have reused the deleted one .. hmm...
+                                }
                                 if self.acname == "" {
                                     plane.name = "Unknown"
                                 } else {
                                     plane.name = self.acname
                                 }
-                                //plane.id = UUID()
                                 plane.tanksize = tsd
+                                if ssd > 100 {
+                                    plane.maxspeed = 100.0
+                                } else if ssd < 0 {
+                                    plane.maxspeed = 0.0
+                                } else {
+                                    plane.maxspeed = ssd
+                                }
+                                plane.maxpressure = psd
                                 do {
                                     print("self.tankcapy \(self.tankcapy), tsd \(tsd)")
                                     print("self.acname \(self.acname)")
+                                    print("plane.acname: \(plane.name ?? "foo")")
+                                    print("plane.tanksize: \(plane.tanksize)")
+                                    print("plane.maxspeed: \(plane.maxspeed)")
+                                    print("plane.maxpressure: \(plane.maxpressure)")
                                     print("about to moc.save")
+                                    
                                     try self.moc.save()
+                                    
                                     print("after try self.moc.save")
-                                    self.tele.selectedPlaneName = self.acname
-                                    self.tele.selectedPlaneTankCap = tsd
+                                    self.tele.selectedPlaneName = plane.name ?? "unk"
+                                    self.tele.selectedPlaneTankCap = plane.tanksize
+                                    self.tele.selectedPlaneMaxSpeed = plane.maxspeed
+                                    self.tele.selectedPlaneMaxPressure = plane.maxpressure
+                                    self.tele.selectedPlaneID = plane.id
+                                    if plane.id == nil {
+                                        print("plane.id is nil")
+                                    } else {
+                                        print("plane.id = \(plane.id!)")
+                                        self.selectedID = (plane.id!).uuidString
+                                    }
+                                    self.editcurrent = false
                                     self.tankcapy = ""
                                     self.acname = ""
+                                    self.pumpspeed = ""
+                                    self.maxpressure = ""
                                     self.submenu = false
                                 } catch {
                                     print("core data error")
@@ -84,11 +171,11 @@ struct MedidoAircraft: View {
                             self.showingAlert = true
                         }
                     }) {
-                        Text("Add this new plane")
+                        Text("Save plane data")
                     }
                     .alert(isPresented: self.$showingAlert) {
                         Alert(title: Text("Conversion Error"),
-                              message: Text("Tank size must be a number"),
+                              message: Text("Invalid number"),
                               dismissButton: .default(Text("OK")))
                     }
                     .padding()
@@ -98,8 +185,9 @@ struct MedidoAircraft: View {
                     .padding()
                 }
                 Spacer()
-            } else {
-                Text("Aircraft").font(.system(size: fsize))
+                
+            } else { // Main view to be shown if here
+                Text("Stored Aircraft").font(.system(size: fsize))
                 List {
                     HStack {
                         Text("Name").offset(x:50)
@@ -116,12 +204,18 @@ struct MedidoAircraft: View {
                                 //print("select!")
                                 self.tele.selectedPlaneName = plane.name ?? "unk"
                                 self.tele.selectedPlaneTankCap = plane.tanksize
+                                self.tele.selectedPlaneMaxSpeed = plane.maxspeed
+                                self.tele.selectedPlaneMaxPressure = plane.maxpressure
                                 if plane.id != nil {
                                     self.tele.selectedPlaneID = plane.id!
                                     self.selectedID = (plane.id!).uuidString
+                                    print("setting user defaults: \(self.tele.selectedPlaneName)")
                                     UserDefaults.standard.set(self.selectedID, forKey: "selUUID")
                                     UserDefaults.standard.set(self.tele.selectedPlaneTankCap, forKey: "selTankCap")
                                     UserDefaults.standard.set(self.tele.selectedPlaneName, forKey: "selName")
+                                    UserDefaults.standard.set(self.tele.selectedPlaneMaxSpeed, forKey: "selSpeed")
+                                    UserDefaults.standard.set(self.tele.selectedPlaneMaxPressure, forKey: "selPressure")
+                                    
                                 }
                                // print("selectedID: \(String(describing: plane.id))")
                             }) {
@@ -142,16 +236,36 @@ struct MedidoAircraft: View {
                         }
                     }.onDelete(perform: removeFields)
                 }
-                Button(action: {
-                    self.submenu = true
-                }) {
-                    Text("Add a new plane")
+                HStack{
+                    Button(action: {
+                        self.submenu = true
+                        self.editcurrent = false
+                    }) {
+                        Text("New plane")
+                    }
+                    .padding()
+                    .background(Color.secondary)
+                    .cornerRadius(CGFloat(40))
+                    .foregroundColor(Color.primary)
+                    .padding()
+                    
+                    Button(action: {
+                        self.submenu = true
+                        self.editcurrent = true
+                        self.acname = self.tele.selectedPlaneName
+                        self.tankcapy = "\(self.tele.selectedPlaneTankCap)"
+                        self.pumpspeed = "\(self.tele.selectedPlaneMaxSpeed)"
+                        self.maxpressure = "\(self.tele.selectedPlaneMaxPressure)"
+                        print("edit current plane")
+                    }) {
+                        Text("Edit Current")
+                    }
+                    .padding()
+                    .background(Color.secondary)
+                    .cornerRadius(CGFloat(40))
+                    .foregroundColor(Color.primary)
+                    .padding()
                 }
-                .padding()
-                .background(Color.secondary)
-                .cornerRadius(CGFloat(40))
-                .foregroundColor(Color.primary)
-                .padding()
             }
         }
     }
@@ -164,6 +278,7 @@ struct MedidoAircraft: View {
     
     func removeFields(at offsets: IndexSet) {
         for index in offsets {
+            print("in removeFields: index: \(index)")
             let plane = planes[index]
             moc.delete(plane)
         }

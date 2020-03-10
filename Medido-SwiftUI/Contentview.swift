@@ -27,11 +27,11 @@ struct ContentView: View {
                         Text("Gauge")
                     }
             }.tag(1)
-            MedidoMainChart()
+            MedidoMainCombo()
                 .tabItem {
                     VStack {
                         Image(systemName: "2.circle")
-                        Text("Chart")
+                        Text("Combo")
                     }
             }.tag(2)
             MedidoDeviceList()
