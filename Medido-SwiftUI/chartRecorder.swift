@@ -46,13 +46,13 @@ struct chartRecorder: View {
                     Text(self.ylabel).foregroundColor(self.ycolor).font(.system(size: 12))
                     Spacer()
                     Text(self.zlabel).foregroundColor(self.zcolor).font(.system(size: 12))
-                }.offset(y: -20)
+                }.offset(y: -16)
                 graphRect().aspectRatio(self.aspect, contentMode: .fill)
                 graphGrid(hgrid: self.hgrid, vgrid: self.vgrid).aspectRatio(self.aspect, contentMode: .fill)
                 graphData(XP: self.XP, YP: self.YP, xrange: self.xrange, ymin: self.ymin, ymax: self.ymax, linewidth: 2).aspectRatio(self.aspect, contentMode: .fill).foregroundColor(self.ycolor).clipped()
                 graphData(XP: self.XP, YP: self.ZP, xrange: self.xrange, ymin: self.zmin, ymax: self.zmax, linewidth: 2).aspectRatio(self.aspect, contentMode: .fill).foregroundColor(self.zcolor).clipped()
                 graphLabels(XP: self.XP, xrange: self.xrange, nlabel: self.nlabel, wid: 0, hgt: 0)
-            }.padding()
+                }.padding().clipped()
         }
     }
 }
@@ -182,15 +182,18 @@ private struct graphData: Shape {
                 yt = ys
             }
             let ytt = yt
+            
             //print(YP[i], yt, ytt)
             yp = (1.0 - CGFloat(ytt)) * rect.height
+            
             if i == 0 {
                 path.move(to: CGPoint(x: xp, y:yp))
             }
-            path.addLine(to: CGPoint(x: xp, y:yp))
-            //path.addEllipse(in: CGRect(x: xp-3, y: yp-3, width:6, height: 6))
+            //path.addLine(to: CGPoint(x: xp, y:yp))
+            path.addEllipse(in: CGRect(x: xp-1, y: yp-1, width:2, height: 2))
         }
-        return path.strokedPath(.init(lineWidth: CGFloat(linewidth), lineCap: .round))
+        //return path.strokedPath(.init(lineWidth: CGFloat(linewidth), lineCap: .round))
+        return path//.strokedPath(.init(lineWidth: CGFloat(linewidth), lineCap: .round))
     }
 }
 

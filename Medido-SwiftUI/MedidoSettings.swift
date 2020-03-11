@@ -14,10 +14,13 @@ struct MedidoSettings: View {
     @State private var ppoEmpty: Double = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
     @State private var battCutoff: Double = Double(UserDefaults.standard.integer(forKey: "battCutoff")) / 10.0
 
-     @EnvironmentObject var tel: Telem
+    @EnvironmentObject var tel: Telem
 
     let ppoMax = 200.0
     let ppoMin = 20.0
+    @State private var runTime: Double = 0.0
+    @State private var timerRunning: Bool = false
+
     
     // default battery cutoff 3V per cell * 3 cells = 9V
     
@@ -104,9 +107,66 @@ struct MedidoSettings: View {
             }.padding()
             
             Text("Pump Current (A): \(tele.motorCurrent, specifier: "%.2f")").padding()
+            
+            Button(action: {
+                self.runTime = 0.0
+                let interval: Double = 0.2
+                if self.timerRunning == false {
+                    clearChartRecData()
+                    let timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
+                        if self.timerRunning == false {
+                            timer.invalidate()
+                        } else {
+                            if self.runTime > tele.xp.first! + 120.00 {
+                                tele.xp.remove(at: 0)
+                                tele.yp.remove(at: 0)
+                                tele.zp.remove(at: 0)
+                            }
+                            tele.runningTime = self.runTime
+                            let rtmins = floor(self.runTime / 60.0)
+                            let rtsecs = self.runTime - rtmins * 60
+                            tele.runningTimeString = String(format: "%02.0f:%02.0f", rtmins, rtsecs)
+                            tele.xp.append(self.runTime)
+                            if tele.isMetric == false {
+                                tele.flowRate = 40 * sin(2 * .pi * self.runTime / 60.0)
+                            } else {
+                                tele.flowRate = 800 * sin(2 * .pi * self.runTime / 60.0)
+                            }
+                            tele.fuelFlow += tele.flowRate * 0.2 / 60.0
+                            tele.yp.append(tele.flowRate)
+                            if tele.isMetric == false {
+                                tele.pressPSI_mB = 5 + 4 * cos(2 * .pi * self.runTime / 60.0)
+                            } else {
+                                tele.pressPSI_mB = 400 + 300 * cos(2 * .pi * self.runTime / 60.0)
+                            }
+                            tele.zp.append(tele.pressPSI_mB)
+                            
+                            self.runTime += interval
+                            //print("Timer fired!")
+                            //print("runTime: \(self.runTime)")
+                        }
+                    }
+                    self.timerRunning = true
+                } else {
+                    self.timerRunning = false
+                }
+            }){
+                Text("Test")
+                    .frame(width: 60)
+                    .font(.system(size: 20))
+                    .padding(5)
+                    .background(Color.purple)
+                    .cornerRadius(30)
+                    .foregroundColor(Color.primary)
+                    .padding()
+            }
+            
         }
     }
 }
+
+
+
 
 private func checkBoolMetric(tgl: Bool) -> String {
     //print("tgl is: \(tgl)")

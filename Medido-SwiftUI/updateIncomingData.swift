@@ -135,13 +135,16 @@ func updateIncomingData () {
         if let vf = Double(valueArray[1]) {
             switch valName {
             case "rTIM":
+                
+                // Note: Much of this code is replicated in MedidoSettings.swift to implement the test function .. should create a function to reuse ...
+                
                 let rtmins = floor(vf / 60.0)
                 let rtsecs = vf - rtmins * 60
                 tele.runningTimeString = String(format: "%02.0f:%02.0f", rtmins, rtsecs)
                 
                 if vf != tele.runningTime { // don't add points to chart recorder data unless we're running
 //                    if tele.xp.count >= 120 { // has to be equal to xrange .. go fix this properly...
-                    if vf > tele.xp.first! + 120.00 {
+                    if vf > tele.xp.first! + 120.00 { // full scale on x (time) axis is 120 secs = 2:00 ... should parameterize!
                         tele.xp.remove(at: 0)
                         tele.yp.remove(at: 0)
                         tele.zp.remove(at: 0)
@@ -173,7 +176,7 @@ func updateIncomingData () {
                 }
                 //print("fuelFlow \(vf)")
                 if tele.selectedPlaneTankCap > 0 {
-                    if vfa > tele.selectedPlaneTankCap {
+                    if vfa > tele.selectedPlaneTankCap  && tele.selectedPlaneTankCap > 0 { // don't auto off if tank cap is 0 ..
                         if autoOff == false {
                             let utstr = String(format: "%.0f", tele.selectedPlaneTankCap)
                             if !tele.isMetric {
@@ -181,7 +184,7 @@ func updateIncomingData () {
                             } else {
                                 utterance = AVSpeechUtterance(string: "Pump off at " + utstr +  " milliliters")
                             }
-                            utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
+                            utterance.voice = AVSpeechSynthesisVoice(language: "en-GB")
                             utterance.rate = 0.5
                             synth.speak(utterance)
                             if !tele.isMetric {

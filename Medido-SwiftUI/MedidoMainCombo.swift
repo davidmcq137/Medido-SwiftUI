@@ -12,15 +12,94 @@ import Combine
 
 struct MedidoMainCombo: View {
     
+    let devmbh = UIScreen.main.bounds.height
+    let devmbw = UIScreen.main.bounds.width
+    
     @State private var sMaxPress: Double = 0.0
     @State private var sMaxSpeed: Double = 0.0
     
     @EnvironmentObject var tel: Telem
     
-    var fsize: CGFloat = 18
-    let devmbh = UIScreen.main.bounds.height
-    let devmbw = UIScreen.main.bounds.width
+    var fsize: CGFloat = 22
+    
+    @State private var fRIoz: Int = 0
+    let flowRangeStringsOz: [String] = ["[-45,45]", "[-30,30]", "[-15,15]"]
+    let flowRangeMinOz: [Double] = [-45, -30, -15]
+    let flowRangeMaxOz: [Double] = [45, 30, 15]
+    
+    @State private var fRIml: Int = 0
+    let flowRangeStringsml: [String] = ["[-1000,1000]", "[-500,500]", "[-250,250]"]
+    let flowRangeMinml: [Double] = [-1000, -500, -250]
+    let flowRangeMaxml: [Double] = [1000, 500, 250]
+    
+    @State private var pRIpsi: Int = 0
+    let pressRangeStringsPSI: [String] = ["[0-10]", "[0-5]", "[0-2]" ]
+    let pressRangeMinPSI: [Double] = [0,0,0]
+    let pressRangeMaxPSI: [Double] = [10,5,2]
+    
+    @State private var pRImbar: Int = 0
+    let pressRangeStringsmbar: [String] = ["[0-800]", "[0-400]", "[0-200]" ]
+    let pressRangeMinmbar: [Double] = [0,0,0]
+    let pressRangeMaxmbar: [Double] = [800, 400, 200]
+    
+    
+    @GestureState var draggedBy = CGSize.zero
 
+    var drag: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .updating($draggedBy) { value, state, transaction in
+                state = value.translation
+        }
+        .onEnded { arg in
+            if arg.location.x <= self.devmbw/2 {
+                if arg.location.y - arg.startLocation.y <= 0 {
+                    if self.tel.isMetric == false {
+                        if self.fRIoz + 1 < self.flowRangeStringsOz.count {
+                            self.fRIoz += 1
+                        }
+                    } else {
+                        if self.fRIml + 1 < self.flowRangeStringsml.count {
+                            self.fRIml += 1
+                        }
+                    }
+                } else {
+                    if self.tel.isMetric == false {
+                        if self.fRIoz - 1 >= 0 {
+                            self.fRIoz -= 1
+                        }
+                    } else {
+                        if self.fRIml - 1 >= 0 {
+                            self.fRIml -= 1
+                        }
+                    }
+                }
+            } else {
+                if arg.location.y - arg.startLocation.y <= 0 {
+                    if self.tel.isMetric == false {
+                        if self.pRIpsi + 1 < self.pressRangeStringsPSI.count {
+                            self.pRIpsi += 1
+                        }
+                    } else {
+                        if self.pRImbar + 1 < self.pressRangeStringsmbar.count {
+                            self.pRImbar += 1
+                        }
+                    }
+                } else {
+                    if self.tel.isMetric == false {
+                        if self.pRIpsi - 1 >= 0 {
+                            self.pRIpsi -= 1
+                        }
+                    } else {
+                        if self.pRImbar - 1 >= 0 {
+                            self.pRImbar -= 1
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
     var body: some View {
         VStack {
             if tel.isMetric == false {
@@ -70,17 +149,21 @@ struct MedidoMainCombo: View {
             if !tel.isMetric {
                 chartRecorder(aspect: 2.0 * 812 / devmbh, hgrid: 6, vgrid: 4, //812 is height of 11pro .. scale from there
                               XP: tel.xp, YP: tel.yp, ZP: tel.zp,
-                              xrange: 120.0, nlabel: 6,
-                              ymin: -10.0, ymax: 10.0, ylabel: "Flow (oz/min) [-10,10] ", yvalue: tel.flowRate, ycolor: Color.blue,
-                              zmin: 0.0,   zmax: 2.0,  zlabel: "Press(psi) [0,2] ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
-                ).padding()
+                              xrange: 120.0, nlabel: 6, //flowRangeStrings[flowRangeIndex]
+                              ymin: flowRangeMinOz[fRIoz], ymax: flowRangeMaxOz[fRIoz],
+                              ylabel: "Flow (oz/min): " + flowRangeStringsOz[fRIoz], yvalue: tel.flowRate, ycolor: Color.blue,
+                              zmin: pressRangeMinPSI[pRIpsi],   zmax: pressRangeMaxPSI[pRIpsi],  zlabel: "Press(psi): " + pressRangeStringsPSI[pRIpsi],
+                              zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                    ).gesture(drag).padding()
             } else {
                 chartRecorder(aspect: 2.0 * 812 / devmbh, hgrid: 6, vgrid: 4,
                               XP: tel.xp, YP: tel.yp, ZP: tel.zp,
                               xrange: 120.0, nlabel: 6,
-                              ymin: -500.0, ymax: 500.0, ylabel: "F (ml/min) [-500,500] ", yvalue: tel.flowRate, ycolor: Color.blue,
-                              zmin: 0.0,   zmax: 200.0,  zlabel: "P (mB) [0,200] ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
-                ).padding()
+                              ymin: flowRangeMinml[fRIml], ymax: flowRangeMaxml[fRIml], ylabel: "F (ml/min): " + flowRangeStringsml[fRIml],
+                              yvalue: tel.flowRate, ycolor: Color.blue,
+                              zmin: pressRangeMinmbar[pRImbar], zmax: pressRangeMaxmbar[pRImbar], zlabel: "P (mBar): " + pressRangeStringsmbar[pRImbar],
+                              zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                    ).gesture(drag).padding()
             }
             HStack {
                 Button(action: {
@@ -96,7 +179,7 @@ struct MedidoMainCombo: View {
                 }){
                     Text("Empty")
                         .font(.system(size: fsize))
-                        .frame(width: 60)
+                        .frame(width: 65)
                         .padding(5)
                         .background(Color.yellow)
                         .cornerRadius(30)
@@ -110,7 +193,7 @@ struct MedidoMainCombo: View {
                 }){
                     Text("Off")
                         .font(.system(size: fsize))
-                        .frame(width: 60)
+                        .frame(width: 65)
                         .padding(5)
                         .background(Color.red)
                         .cornerRadius(30)
@@ -133,7 +216,7 @@ struct MedidoMainCombo: View {
                 }){
                     Text("Fill")
                         .font(.system(size: fsize))
-                        .frame(width: 60)
+                        .frame(width: 65)
                         .padding(5)
                         .background(Color.blue)
                         .cornerRadius(30)
