@@ -176,6 +176,7 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
         utterance.rate = 0.5
         synth = AVSpeechSynthesizer()
+        print("about to speak utterance")
         synth.speak(utterance)
 
         // setup code to get gps location .. not used in medido pump

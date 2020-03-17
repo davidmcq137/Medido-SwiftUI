@@ -44,6 +44,7 @@ struct MedidoMainCombo: View {
     
     
     @GestureState var draggedBy = CGSize.zero
+    @GestureState var draggedPressBy = CGSize.zero
 
     var drag: some Gesture {
         DragGesture(minimumDistance: 10)
@@ -99,7 +100,40 @@ struct MedidoMainCombo: View {
         }
     }
     
-    
+    var dragPress: some Gesture {
+        DragGesture(minimumDistance: 5)
+            .updating($draggedPressBy) { value, state, transaction in
+                state = value.translation
+        }
+        .onEnded { arg in
+            let xdist = arg.location.x - arg.startLocation.x
+            let ydist = arg.startLocation.y - arg.location.y
+            let scale: CGFloat = 50.0
+            //print("x dist: \(arg.location.x - arg.startLocation.x)")
+            //print("y dist: \(arg.startLocation.y - arg.location.y)")
+            var dist: CGFloat
+            if abs(xdist) >= abs(ydist) {
+                dist = xdist
+            } else {
+                dist = ydist
+            }
+            
+            self.tel.sliderPressure = self.tel.sliderPressure + Int (10.0 * dist / scale)
+            if self.tel.isMetric == false {
+                if self.tel.sliderPressure > 100 { //  10.0 psi
+                    self.tel.sliderPressure = 100
+                }
+            } else {
+                if self.tel.sliderPressure > 116 {// 0.8 bar
+                    self.tel.sliderPressure = 116
+                }
+            }
+            if self.tel.sliderPressure < 0 {
+                self.tel.sliderPressure = 0
+            }
+        } //
+    }
+
     var body: some View {
         VStack {
             if tel.isMetric == false {
@@ -111,16 +145,16 @@ struct MedidoMainCombo: View {
                 HStack {
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: false, bugValue: 0).foregroundColor(.blue)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.0, -0.5, 0, 0.5, 1.0], minValue: -1, maxValue: 1).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.0, -0.5, 0, 0.5, 1.0], minValue: -1, maxValue: 1, showBug: false, bugValue: 0).foregroundColor(.blue)//.border(Color.yellow)
                         }
                     }
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.pressPSI_mB, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0).foregroundColor(.yellow)//.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0, showBug: true, bugValue: Double(tel.sliderPressure) / 10.0).foregroundColor(.yellow).gesture(dragPress)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.pressPSI_mB/1000.0, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8).foregroundColor(.yellow)//.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB/1000.0, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8, showBug: true, bugValue: Double(tel.sliderPressure) / (10 * 14.5)).foregroundColor(.yellow).gesture(dragPress) //.border(Color.yellow)
                         }
                     }
                 }

@@ -28,16 +28,16 @@ struct MedidoMain: View {
                 HStack {
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: false, bugValue: 0.0).foregroundColor(.blue)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.0, -0.5, 0, 0.5, 1.0], minValue: -1, maxValue: 1).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.0, -0.5, 0, 0.5, 1.0], minValue: -1, maxValue: 1, showBug: false, bugValue: 0.0).foregroundColor(.blue)//.border(Color.yellow)
                         }
                     }
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.pressPSI_mB, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0).foregroundColor(.yellow)//.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0, showBug: true, bugValue: Double(tel.sliderPressure) / 10.0 ).foregroundColor(.yellow)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.pressPSI_mB/1000.0, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8).foregroundColor(.yellow)//.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB/1000.0, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8, showBug: true, bugValue: Double(tel.sliderPressure) / (14.5 * 10) ).foregroundColor(.yellow)//.border(Color.yellow)
                         }
                     }
                 }
@@ -70,7 +70,7 @@ struct MedidoMain: View {
                 //.border(Color.red)
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.1f") PSI").font(.system(size: 15))
             } else {
-                Slider(value: $sMaxPress, in: 0...1000, step: 10.0) { ss in
+                Slider(value: $sMaxPress, in: 0...800, step: 10.0) { ss in
                     self.tel.sliderPressure = Int(self.sMaxPress * (14.5 / 1000) * 10)
                     if self.tel.sliderPressure > 145 { // just in case... limit to 14.5 psi (sent as x10 in an Int)
                         self.tel.sliderPressure = 145

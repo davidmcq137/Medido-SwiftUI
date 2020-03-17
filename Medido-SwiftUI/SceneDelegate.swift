@@ -48,6 +48,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tele.isMetric = UserDefaults.standard.bool(forKey: "isMetric") // if not exist, returns false .. perfect :-)
         tele.overFlowShutoff = UserDefaults.standard.bool(forKey: "overFlowShutoff") // if not exist, returns false .. perfect :-)
         tele.isSPIpump = UserDefaults.standard.bool(forKey: "isSPIpump") // if not exist, returns false .. perfect :-)
+        let savedmax = tele.maxPWM //if never set, user def will ret zero, we want the init value instead
+        tele.maxPWM = UserDefaults.standard.integer(forKey: "maxPWM")
+        if tele.maxPWM == 0 {
+            tele.maxPWM = savedmax
+        }
         
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

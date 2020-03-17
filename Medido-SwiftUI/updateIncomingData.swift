@@ -42,6 +42,7 @@ class Telem: ObservableObject {
     @Published var maxPWM: Int = 870 // 1023 * 85%
     @Published var overFlowShutoff:  Bool = false
     @Published var isSPIpump = false
+    @Published var OTApercent: Int = 0
 }
 
 
@@ -125,7 +126,6 @@ func updateIncomingData () {
         }
         let valName = valueArray[0]
         
-        //print(valName, valValue)
         
         if valName == "Text" {
             print("Text: \(valueArray[1])")
@@ -133,6 +133,8 @@ func updateIncomingData () {
         }
         
         if let vf = Double(valueArray[1]) {
+            //print(valName, vf)
+
             switch valName {
             case "rTIM":
                 
@@ -242,13 +244,15 @@ func updateIncomingData () {
                 //print("heap: \(vf)")
                 break
             case "Init":
-                writeValue(data: "(Prs: \(tele.sliderPressure)")
-                writeValue(data: "(Spd: \(tele.sliderSpeed)")
+                writeValue(data: "(Prs: \(tele.sliderPressure))")
+                writeValue(data: "(Spd: \(tele.sliderSpeed))")
                 print("Case init")
             case "pPWM":
                 break
             case "PowerDown":
                 print("Medido is powering down")
+            case "OTA":
+                tele.OTApercent = Int(vf)
             default:
                 print("Bad valName: \(valName)")
             }
@@ -257,6 +261,10 @@ func updateIncomingData () {
 }
 
 func writeValue(data: String) {
+    writeValueRaw(data: data + "\n")
+}
+
+func writeValueRaw(data: String) {
     //print("in wV string: \(data)")
     print("writeValue: \(data)")
     let txdata = data + "\n"

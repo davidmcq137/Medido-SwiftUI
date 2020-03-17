@@ -18,8 +18,10 @@ struct Gauge: View {
     private let labels: [Double]
     private let minValue: Double
     private let maxValue: Double
+    private let showBug: Bool
+    private let bugValue: Double
 
-    init(value: Double, fmtstr: String, title: String, units: String, labels: [Double], minValue: Double, maxValue: Double) {
+    init(value: Double, fmtstr: String, title: String, units: String, labels: [Double], minValue: Double, maxValue: Double, showBug: Bool, bugValue: Double) {
         self.value = value
         self.fmtstr = fmtstr
         self.title = title
@@ -27,6 +29,8 @@ struct Gauge: View {
         self.minValue = minValue
         self.maxValue = maxValue
         self.labels = labels
+        self.showBug = showBug
+        self.bugValue = bugValue
     }
 
     var body: some View {
@@ -35,6 +39,10 @@ struct Gauge: View {
                 GaugeArc()//.border(Color.red)
                 Needle()
                     .rotationEffect(needleAngle(value: self.value, minValue: self.minValue, maxValue: self.maxValue), anchor: .center)
+                if showBug == true {
+                    Bug()
+                        .rotationEffect(needleAngle(value: self.bugValue, minValue: self.minValue, maxValue: self.maxValue), anchor: .center).foregroundColor(Color.black)
+                }
                 DrawLabels(labels: self.labels, value: self.value, fmtstr: fmtstr, minValue: self.minValue, maxValue: self.maxValue, legend: title, units: units)//.border(Color.yellow)
                 DrawTicks(count: self.labels.count, width: 0, center: 0).foregroundColor(Color.black)
                 DrawFineTicks(count: self.labels.count, width: 0, center: 0).foregroundColor(Color.black)
@@ -69,7 +77,7 @@ struct DrawTicks: Shape {
         
         
         
-        return p.strokedPath(.init(lineWidth: 4, lineCap: .square ))
+        return p.strokedPath(.init(lineWidth: 3, lineCap: .square ))
     }
 }
 
@@ -164,6 +172,25 @@ struct Needle: Shape {
         path.addLine(to: CGPoint(x: Double(eps+rect.midX), y: Double(0+rect.midY)))
         path.addLine(to: CGPoint(x: Double(-eps + rect.midX), y: Double(0 + rect.midY)))
 
+        return path
+    }
+}
+
+struct Bug: Shape {
+
+    func path(in rect: CGRect) -> Path {
+
+        var path = Path()
+        let epsW: CGFloat = 0.025 * min(rect.maxX, rect.maxY)
+        let epsH: CGFloat = -0.06 * min(rect.maxX, rect.maxY)
+        let lenscale: CGFloat = 0.55
+        let len: CGFloat = lenscale * min((rect.maxX - rect.minX), (rect.maxY - rect.minY)) / CGFloat(2.0)
+        //print("Needle \(rect.minX) \(rect.midX) \(rect.maxX) \(rect.minY), \(rect.midY) \(rect.maxY)")
+        
+        path.move(to: CGPoint(x: Double(-epsW + rect.midX), y: Double(-len + epsH + rect.midY)))
+        path.addLine(to: CGPoint(x: Double(rect.midX), y: Double(-len + rect.midY)))
+        path.addLine(to: CGPoint(x: Double(epsW+rect.midX), y: Double(-len + epsH + rect.midY)))
+        //return path.strokedPath(.init(lineWidth: CGFloat(2), lineCap: .round))
         return path
     }
 }
