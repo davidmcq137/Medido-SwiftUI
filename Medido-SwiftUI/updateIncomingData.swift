@@ -27,8 +27,10 @@ class Telem: ObservableObject {
     @Published var iPadLon: Double = 0
     @Published var selectedPlaneName: String = ""
     @Published var selectedPlaneTankCap: Double = 0
+    @Published var selectedPlaneTankUnits: String = "---"
     @Published var selectedPlaneMaxSpeed: Double = 0
     @Published var selectedPlaneMaxPressure: Double = 0
+    @Published var selectedPlaneMaxPressureUnits: String = "---"
     @Published var selectedPlaneID: UUID!
     @Published var BLEConnected = false
     @Published var isMetric: Bool = false

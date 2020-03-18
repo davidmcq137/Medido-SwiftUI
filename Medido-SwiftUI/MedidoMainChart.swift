@@ -60,6 +60,9 @@ struct MedidoMainChart: View {
                 .frame(width: sW, height: sH)
                 .padding(5)
                 .accentColor(Color.yellow)
+                .onAppear {
+                    self.sMaxPress = 0.1 * Double(self.tel.sliderPressure)
+                }
                 //.border(Color.red)
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.1f") PSI").font(.system(size: 15))
             } else {
@@ -73,6 +76,9 @@ struct MedidoMainChart: View {
                 .frame(width: sW, height: sH)
                 .padding(5)
                 .accentColor(Color.yellow)
+                .onAppear {
+                    self.sMaxPress = 0.1 * Double(self.tel.sliderPressure) * 1000.0 / 14.5
+                }
                 //.border(Color.red)
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.0f") mBar").font(.system(size: 15))
             }

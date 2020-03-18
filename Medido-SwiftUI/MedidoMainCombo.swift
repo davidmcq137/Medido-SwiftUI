@@ -136,18 +136,14 @@ struct MedidoMainCombo: View {
 
     var body: some View {
         VStack {
-            if tel.isMetric == false {
-                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") oz)").fontWeight(.semibold).font(.system(size: 20))
-            } else {
-                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") ml)").fontWeight(.semibold).font(.system(size: 20))
-            }
+            Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f")  \(tel.selectedPlaneTankUnits))").fontWeight(.semibold).font(.system(size: 20))
             ZStack {
                 HStack {
                     VStack {
                         if tel.isMetric == false {
                             Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: false, bugValue: 0).foregroundColor(.blue)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.0, -0.5, 0, 0.5, 1.0], minValue: -1, maxValue: 1, showBug: false, bugValue: 0).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.6, -0.8, 0, 0.8, 1.6], minValue: -1.6, maxValue: 1.6, showBug: false, bugValue: 0).foregroundColor(.blue)//.border(Color.yellow)
                         }
                     }
                     VStack {
@@ -207,6 +203,8 @@ struct MedidoMainCombo: View {
                     if tele.isSPIpump == false {
                         writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
                         writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
+                        writeValue(data: String(format: "(Prs: %d)", tele.sliderPressure))
+                        writeValue(data: String(format: "(Spd: %d)", tele.sliderSpeed))
                     }
                     writeValue(data: "(Empty)")
                     clearChartRecData()
@@ -244,6 +242,8 @@ struct MedidoMainCombo: View {
                     if tele.isSPIpump == false {
                         writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
                         writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
+                        writeValue(data: String(format: "(Prs: %d)", tele.sliderPressure))
+                        writeValue(data: String(format: "(Spd: %d)", tele.sliderSpeed))
                     }
                     writeValue(data: "(Fill)")
                     clearChartRecData()

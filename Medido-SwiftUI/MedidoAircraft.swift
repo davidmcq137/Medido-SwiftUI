@@ -48,10 +48,13 @@ struct MedidoAircraft: View {
                 VStack (spacing: 5) {
                     if tele.isMetric == false {
                         TextField("Capacity (oz)", text: self.$tankcapy).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                        Text("Fuel Tank Capcity (oz)")
                     } else {
                         TextField("Capacity (ml)", text: self.$tankcapy).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                        Text("Fuel Tank Capcity (ml)")
+                        
                     }
-                    Text("Fuel Tank Capcity")
+
                 }.padding()
                 
                 VStack (spacing: 5) {
@@ -62,10 +65,11 @@ struct MedidoAircraft: View {
                 VStack (spacing: 5) {
                     if tele.isMetric == false {
                         TextField("Pressure (psi)", text: self.$maxpressure).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                        Text("Regulated Delivery Pressure (psi)")
                     } else {
                         TextField("Pressure (mBar)", text: self.$maxpressure).textFieldStyle(RoundedBorderTextFieldStyle()).frame(width: 300, height: 30)
+                        Text("Regulated Delivery Pressure (mbar)")
                     }
-                    Text("Regulated Delivery Pressure")
                 }.padding()
                 
                 HStack{
@@ -92,7 +96,7 @@ struct MedidoAircraft: View {
                                 if self.tele.isMetric == false {
                                     self.maxpressure = "5.0"
                                 } else {
-                                    self.maxpressure = "0.5"
+                                    self.maxpressure = "400"
                                 }
                             }
                         } else {
@@ -133,13 +137,17 @@ struct MedidoAircraft: View {
                                     plane.maxspeed = ssd
                                 }
                                 plane.maxpressure = psd
+                                plane.maxpUnits = self.tele.isMetric ? "mbar" : "psi"
+                                plane.tanksUnits = self.tele.isMetric ? "ml" : "oz"
                                 do {
                                     print("self.tankcapy \(self.tankcapy), tsd \(tsd)")
                                     print("self.acname \(self.acname)")
                                     print("plane.acname: \(plane.name ?? "foo")")
                                     print("plane.tanksize: \(plane.tanksize)")
+                                    print("plane tank units: \(plane.tanksUnits ?? "unk")")
                                     print("plane.maxspeed: \(plane.maxspeed)")
                                     print("plane.maxpressure: \(plane.maxpressure)")
+                                    print("plane.maxpUnits: \(plane.maxpUnits ?? "unk")")
                                     print("about to moc.save")
                                     
                                     try self.moc.save()
@@ -147,9 +155,21 @@ struct MedidoAircraft: View {
                                     print("after try self.moc.save")
                                     self.tele.selectedPlaneName = plane.name ?? "unk"
                                     self.tele.selectedPlaneTankCap = plane.tanksize
+                                    self.tele.selectedPlaneTankUnits = plane.tanksUnits ?? "unk"
                                     self.tele.selectedPlaneMaxSpeed = plane.maxspeed
                                     self.tele.selectedPlaneMaxPressure = plane.maxpressure
+                                    self.tele.selectedPlaneMaxPressureUnits = plane.maxpUnits ?? "unk"
                                     self.tele.selectedPlaneID = plane.id
+
+                                    self.tele.sliderSpeed = Int(plane.maxspeed)
+
+                                    if self.tele.selectedPlaneMaxPressureUnits == "psi" {
+                                        self.tele.sliderPressure = Int(10 * plane.maxpressure)
+                                    } else if self.tele.selectedPlaneMaxPressureUnits == "mbar" {
+                                        self.tele.sliderPressure = Int(10 * plane.maxpressure / 68.9476)
+                                    } else {
+                                        self.tele.sliderPressure = 0
+                                    }
                                     if plane.id == nil {
                                         print("plane.id is nil")
                                     } else {
@@ -192,11 +212,12 @@ struct MedidoAircraft: View {
                     HStack {
                         Text("Name").offset(x:50)
                         Spacer()
-                        if !tele.isMetric {
-                            Text("Tank Size (oz)")
-                        } else {
-                            Text("Tank Size (ml)")
-                        }
+                        Text("Tank Size")
+                        //if !tele.isMetric {
+                        //    Text("Tank Size (oz)")
+                        //} else {
+                        //    Text("Tank Size (ml)")
+                        //}
                     }
                     ForEach(planes, id: \.id) { plane in
                         HStack {
@@ -206,6 +227,18 @@ struct MedidoAircraft: View {
                                 self.tele.selectedPlaneTankCap = plane.tanksize
                                 self.tele.selectedPlaneMaxSpeed = plane.maxspeed
                                 self.tele.selectedPlaneMaxPressure = plane.maxpressure
+                                self.tele.selectedPlaneMaxPressureUnits = plane.maxpUnits ?? "unk"
+                                self.tele.selectedPlaneTankUnits = plane.tanksUnits ?? "unk"
+                                self.tele.sliderSpeed = Int(plane.maxspeed)
+                                if self.tele.selectedPlaneMaxPressureUnits == "psi" { // tele.sliderPressure is Int of pressure * 10
+                                    self.tele.sliderPressure = Int(10 * plane.maxpressure)
+                                } else {
+                                    self.tele.sliderPressure = Int(10 * plane.maxpressure / 68.9476) // convert mbar to psi
+                                }
+                                print("Selected: \(self.tele.selectedPlaneName)")
+                                print("sliderSpeed: \(self.tele.sliderSpeed)")
+                                print("sliderPressure: \(self.tele.sliderPressure)")
+                                
                                 if plane.id != nil {
                                     self.tele.selectedPlaneID = plane.id!
                                     self.selectedID = (plane.id!).uuidString
@@ -215,7 +248,8 @@ struct MedidoAircraft: View {
                                     UserDefaults.standard.set(self.tele.selectedPlaneName, forKey: "selName")
                                     UserDefaults.standard.set(self.tele.selectedPlaneMaxSpeed, forKey: "selSpeed")
                                     UserDefaults.standard.set(self.tele.selectedPlaneMaxPressure, forKey: "selPressure")
-                                    
+                                    UserDefaults.standard.set(self.tele.selectedPlaneMaxPressureUnits, forKey: "selPressureUnits")
+                                    UserDefaults.standard.set(self.tele.selectedPlaneTankUnits, forKey: "selTankUnits")
                                 }
                                // print("selectedID: \(String(describing: plane.id))")
                             }) {
@@ -233,6 +267,7 @@ struct MedidoAircraft: View {
                             }
                             Spacer()
                             Text("\(plane.tanksize, specifier: "%0.1f")").font(.system(size: 18))
+                            Text("\(plane.tanksUnits ?? "unk")").font(.system(size: 18))
                         }
                     }.onDelete(perform: removeFields)
                 }
@@ -240,6 +275,10 @@ struct MedidoAircraft: View {
                     Button(action: {
                         self.submenu = true
                         self.editcurrent = false
+                        self.acname = ""
+                        self.tankcapy = ""
+                        self.pumpspeed = ""
+                        self.maxpressure = ""
                     }) {
                         Text("New plane")
                     }
@@ -253,9 +292,9 @@ struct MedidoAircraft: View {
                         self.submenu = true
                         self.editcurrent = true
                         self.acname = self.tele.selectedPlaneName
-                        self.tankcapy = "\(self.tele.selectedPlaneTankCap)"
+                        self.tankcapy = "\(self.convertCapy(cap: self.tele.selectedPlaneTankCap, units: self.tele.selectedPlaneTankUnits, isM: self.tele.isMetric))"
                         self.pumpspeed = "\(self.tele.selectedPlaneMaxSpeed)"
-                        self.maxpressure = "\(self.tele.selectedPlaneMaxPressure)"
+                        self.maxpressure = "\(self.convertPress(press: self.tele.selectedPlaneMaxPressure, units: self.tele.selectedPlaneMaxPressureUnits, isM: self.tele.isMetric))"
                         print("edit current plane")
                     }) {
                         Text("Edit Current")
@@ -270,6 +309,39 @@ struct MedidoAircraft: View {
         }
     }
     
+    func convertCapy(cap: Double, units: String, isM: Bool ) -> String {
+        let oz2ml = 29.5735
+        if isM == true {
+            if units == "ml" {
+                return String(format: "%.2f", cap)
+            } else {
+                return String(format: "%.2f", cap * oz2ml)
+            }
+        } else {
+            if units == "oz" {
+                return String(format: "%.2f", cap)
+            } else {
+                return String(format: "%.2f", cap / oz2ml)
+            }
+        }
+    }
+    
+    func convertPress(press: Double, units: String, isM: Bool ) -> String {
+        let psi2mbar = 68.9476
+        if isM == true {
+            if units == "mbar" {
+                return String(format: "%.2f", press)
+            } else {
+                return String(format: "%.2f", press * psi2mbar)
+            }
+        } else {
+            if units == "psi" {
+                return String(format: "%.2f", press)
+            } else {
+                return String(format: "%.2f", press / psi2mbar)
+            }
+        }
+    }
     
     func nextTank()-> Double {
         nlat = nlat + 10

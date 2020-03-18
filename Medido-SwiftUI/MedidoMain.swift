@@ -47,13 +47,16 @@ struct MedidoMain: View {
                     Text("BLE").offset(y: -70).foregroundColor(Color.red).font(.system(size: 18))
                 }
             }
+                        
             if tel.isMetric == false {
-                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") oz)").font(.system(size: 20))
+                //Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") oz)").font(.system(size: 20))
+                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f")  \(tel.selectedPlaneTankUnits))").fontWeight(.semibold).font(.system(size: 20))
                     .padding(5)
                 Text("Total Fuel Flow \(tele.fuelFlow, specifier: "%.1f") oz").font(.system(size: 25))
                     .padding(5)
             } else {
-                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") ml)").font(.system(size: 20))
+                //Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") ml)").font(.system(size: 20))
+                Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f")  \(tel.selectedPlaneTankUnits))").fontWeight(.semibold).font(.system(size: 20))
                     .padding(5)
                 Text("Total Fuel Flow \(tele.fuelFlow, specifier: "%.0f") ml").font(.system(size: 25))
                     .padding(5)
@@ -67,6 +70,9 @@ struct MedidoMain: View {
                 .frame(width: sW, height: sH)
                 .padding(5)
                 .accentColor(Color.yellow)
+                .onAppear {
+                    self.sMaxPress = 0.1 * Double(self.tel.sliderPressure)
+                }
                 //.border(Color.red)
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.1f") PSI").font(.system(size: 15))
             } else {
@@ -80,6 +86,9 @@ struct MedidoMain: View {
                 .frame(width: sW, height: sH)
                 .padding(5)
                 .accentColor(Color.yellow)
+                .onAppear {
+                    self.sMaxPress = 0.1 * Double(self.tel.sliderPressure) * 1000.0 / 14.5
+                }
                 //.border(Color.red)
                 Text("Max Pressure \(self.sMaxPress, specifier: "%.0f") mBar").font(.system(size: 15))
             }
@@ -91,6 +100,9 @@ struct MedidoMain: View {
             .frame(width: sW, height: sH)
             .padding(5)
             .accentColor(Color.blue)
+            .onAppear {
+                self.sMaxSpeed = Double(self.tel.sliderSpeed)
+            }
             //.border(Color.red)
             Text("Max Pump Speed \(Int(self.sMaxSpeed), specifier: "%d") %").font(.system(size: 15))
             HStack {

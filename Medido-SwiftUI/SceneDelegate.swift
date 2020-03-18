@@ -40,14 +40,39 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //note selectedPlaneID is handled in MedidoAircraft.swift
         tele.selectedPlaneName = UserDefaults.standard.string(forKey: "selName") ?? "Unknown Aircraft"
         tele.selectedPlaneTankCap = UserDefaults.standard.double(forKey: "selTankCap")
+        tele.selectedPlaneTankUnits = UserDefaults.standard.string(forKey: "selTankUnits") ?? "unk"
         tele.selectedPlaneMaxSpeed = UserDefaults.standard.double(forKey: "selSpeed")
         tele.selectedPlaneMaxPressure = UserDefaults.standard.double(forKey: "selPressure")
+        tele.selectedPlaneMaxPressureUnits = UserDefaults.standard.string(forKey: "selPressureUnits") ?? "unk"
         
         print("starting up .. selName: \(tele.selectedPlaneName)")
         
         tele.isMetric = UserDefaults.standard.bool(forKey: "isMetric") // if not exist, returns false .. perfect :-)
         tele.overFlowShutoff = UserDefaults.standard.bool(forKey: "overFlowShutoff") // if not exist, returns false .. perfect :-)
         tele.isSPIpump = UserDefaults.standard.bool(forKey: "isSPIpump") // if not exist, returns false .. perfect :-)
+
+        if tele.selectedPlaneMaxPressureUnits == "psi" {
+            tele.sliderPressure = Int(10 * tele.selectedPlaneMaxPressure)
+        } else if tele.selectedPlaneMaxPressureUnits == "mbar" {
+            tele.sliderPressure = Int(10 * tele.selectedPlaneMaxPressure / 68.9476)
+        } else {
+            tele.sliderPressure = 0
+        }
+        
+        tele.sliderSpeed = Int(tele.selectedPlaneMaxSpeed)
+        
+        if tele.selectedPlaneName == "Unknown Aircraft" {
+            tele.selectedPlaneMaxPressure = 5.0
+            tele.selectedPlaneMaxPressureUnits = "psi"
+            tele.selectedPlaneTankCap = 0.0
+            tele.selectedPlaneTankUnits = "oz"
+            tele.selectedPlaneMaxSpeed = 100.0
+            tele.sliderPressure = Int(10.0 * tele.selectedPlaneMaxPressure)
+            tele.sliderSpeed = 100
+        }
+        
+        print("tele.sliderPressure: \(tele.sliderPressure) tele.sliderSpeed: \(tele.sliderSpeed)")
+        
         let savedmax = tele.maxPWM //if never set, user def will ret zero, we want the init value instead
         tele.maxPWM = UserDefaults.standard.integer(forKey: "maxPWM")
         if tele.maxPWM == 0 {
