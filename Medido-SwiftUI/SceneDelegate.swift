@@ -69,6 +69,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             tele.selectedPlaneMaxSpeed = 100.0
             tele.sliderPressure = Int(10.0 * tele.selectedPlaneMaxPressure)
             tele.sliderSpeed = 100
+            
         }
         
         print("tele.sliderPressure: \(tele.sliderPressure) tele.sliderSpeed: \(tele.sliderSpeed)")

@@ -334,7 +334,6 @@ private func writeValueLong(data: String) {
         if String(val[i1..<i2]).count > 0 {
             let seg = String(key + ":" + val[i1 ..< i2])
             writeValue(data: seg)
-            //print("i, seg.count, seg: \(i) \(seg.count) \(seg)")
         }
     }
     return

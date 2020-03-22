@@ -28,9 +28,9 @@ struct MedidoMainCombo: View {
     let flowRangeMaxOz: [Double] = [45, 30, 15]
     
     @State private var fRIml: Int = 0
-    let flowRangeStringsml: [String] = ["[-1000,1000]", "[-500,500]", "[-250,250]"]
-    let flowRangeMinml: [Double] = [-1000, -500, -250]
-    let flowRangeMaxml: [Double] = [1000, 500, 250]
+    let flowRangeStringsml: [String] = ["[-1600,1600]", "[-800,800]", "[-400,400]"]
+    let flowRangeMinml: [Double] = [-1600, -800, -400]
+    let flowRangeMaxml: [Double] = [1600, 800, 400]
     
     @State private var pRIpsi: Int = 0
     let pressRangeStringsPSI: [String] = ["[0-10]", "[0-5]", "[0-2]" ]
@@ -131,6 +131,7 @@ struct MedidoMainCombo: View {
             if self.tel.sliderPressure < 0 {
                 self.tel.sliderPressure = 0
             }
+            writeValue(data: "(Prs: \(self.tel.sliderPressure))")
         } //
     }
 
@@ -141,16 +142,16 @@ struct MedidoMainCombo: View {
                 HStack {
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: false, bugValue: 0).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: false, bugValue: 0).foregroundColor(.blue).animation(.default)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.6, -0.8, 0, 0.8, 1.6], minValue: -1.6, maxValue: 1.6, showBug: false, bugValue: 0).foregroundColor(.blue)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.6, -0.8, 0, 0.8, 1.6], minValue: -1.6, maxValue: 1.6, showBug: false, bugValue: 0).foregroundColor(.blue).animation(.default)//.border(Color.yellow)
                         }
                     }
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.pressPSI_mB, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0, showBug: true, bugValue: Double(tel.sliderPressure) / 10.0).foregroundColor(.yellow).gesture(dragPress)//.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB, fmtstr: "%.0f", title: "Pressure", units: "psi", labels: [0, 2, 4, 6, 8, 10], minValue: 0.0, maxValue: 10.0, showBug: true, bugValue: Double(tel.sliderPressure) / 10.0).foregroundColor(.yellow).gesture(dragPress).animation(.default)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.pressPSI_mB/1000.0, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8, showBug: true, bugValue: Double(tel.sliderPressure) / (10 * 14.5)).foregroundColor(.yellow).gesture(dragPress) //.border(Color.yellow)
+                            Gauge(value: self.tel.pressPSI_mB/1000.0, fmtstr: "%.1f", title: "Pressure", units: "Bar", labels: [0.0, 0.2, 0.4, 0.6, 0.8], minValue: 0.0, maxValue: 0.8, showBug: true, bugValue: Double(tel.sliderPressure) / (10 * 14.5)).foregroundColor(.yellow).gesture(dragPress).animation(.default) //.border(Color.yellow)
                         }
                     }
                 }
@@ -162,16 +163,16 @@ struct MedidoMainCombo: View {
             }
             if tel.isMetric == false {
                 //Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") oz)").font(.system(size: 20))
-                Text("Total Fuel Flow \(tele.fuelFlow, specifier: "%.1f") oz").font(.system(size: 20))
+                Text("Total Fuel Flow (oz) \(tele.fuelFlow, specifier: "%3.1f")").font(Font.system(size: 25).monospacedDigit())
             } else {
                 //Text("\(tel.selectedPlaneName) (\(tel.selectedPlaneTankCap, specifier: "%.0f") ml)").font(.system(size: 20))
-                Text("Total Fuel Flow \(tele.fuelFlow, specifier: "%.0f") ml").font(.system(size: 20))
+                Text("Total Fuel Flow (ml) \(tele.fuelFlow, specifier: "%4.0f")").font(Font.system(size: 25).monospacedDigit())
             }
             
             if tel.isMetric == false {
-                Text("Flow Rate (oz/min) \(tele.flowRate, specifier: "%.1f")")
+                Text("Flow Rate (oz/min) \(tele.flowRate, specifier: "%3.1f")").font(Font.system(size: 20).monospacedDigit())
             } else {
-                Text("Flow Rate (ml/min) \(tele.flowRate, specifier: "%.0f")")
+                Text("Flow Rate (ml/min) \(tele.flowRate, specifier: "%4.0f")").font(Font.system(size: 20).monospacedDigit())
             }
             
             Spacer()
@@ -184,7 +185,7 @@ struct MedidoMainCombo: View {
                               ylabel: "Flow (oz/min): " + flowRangeStringsOz[fRIoz], yvalue: tel.flowRate, ycolor: Color.blue,
                               zmin: pressRangeMinPSI[pRIpsi],   zmax: pressRangeMaxPSI[pRIpsi],  zlabel: "Press(psi): " + pressRangeStringsPSI[pRIpsi],
                               zvalue: tel.pressPSI_mB, zcolor: Color.yellow
-                    ).gesture(drag).padding()
+                ).gesture(drag).padding()
             } else {
                 chartRecorder(aspect: 2.0 * 812 / devmbh, hgrid: 6, vgrid: 4,
                               XP: tel.xp, YP: tel.yp, ZP: tel.zp,
@@ -193,7 +194,7 @@ struct MedidoMainCombo: View {
                               yvalue: tel.flowRate, ycolor: Color.blue,
                               zmin: pressRangeMinmbar[pRImbar], zmax: pressRangeMaxmbar[pRImbar], zlabel: "P (mBar): " + pressRangeStringsmbar[pRImbar],
                               zvalue: tel.pressPSI_mB, zcolor: Color.yellow
-                    ).gesture(drag).padding()
+                ).gesture(drag).padding()
             }
             HStack {
                 Button(action: {
@@ -265,10 +266,10 @@ struct MedidoMainCombo: View {
             HStack () {
                 VStack (alignment: .leading){
                     //Spacer()
-                    Text("Pump Speed: \(Int(tele.pumpSpeed), specifier: "%d") %")
+                    Text("Pump Speed (%): \(Int(tele.pumpSpeed), specifier: "%d")").font(Font.system(size: 18).monospacedDigit())
                     //Spacer()
-                    Text("Running Time: " + (tele.runningTimeString))
-                    Text("Pump battery: \(tele.battVolt, specifier: "%.2f") V")
+                    Text("Running Time: " + (tele.runningTimeString)).font(Font.system(size: 18).monospacedDigit())
+                    Text("Pump battery (V): \(tele.battVolt, specifier: "%.2f")").font(Font.system(size: 18).monospacedDigit())
 
                 }.padding()//.border(Color.purple)
                 Spacer()
