@@ -11,7 +11,12 @@ import SwiftUI
 import Combine
 
 var tele: Telem!
-var autoOff = false
+var autoOffFill = false
+var autoOffEmpty = false
+var flowRateAverage: Double = 0.0
+var flowRateSum: Double = 0.0
+var flowRateNumber: Int = 0
+var flowRateLowCount: Int = 0
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 

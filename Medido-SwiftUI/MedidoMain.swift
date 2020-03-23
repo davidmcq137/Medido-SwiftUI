@@ -109,6 +109,9 @@ struct MedidoMain: View {
                 Button(action: {
                     // user defaults is persistence model for cal factor, send it each time pumping is commanded
                     // to be sure the correct cal factor is being used
+                    autoOffEmpty = false
+                    flowRateNumber = 0
+                    flowRateSum = 0.0 // these three statements arm to auto off detector
                     let ppoE = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
                     if tele.isSPIpump == false {
                         writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
@@ -144,7 +147,7 @@ struct MedidoMain: View {
                 Button(action: {
                     // user defaults is persistence model for cal factor, send it each time pumping is commanded
                     // to be sure the correct cal factor is being used
-                    autoOff = false
+                    autoOffFill = false
                     let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
                     if tele.isSPIpump == false {
                         writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))

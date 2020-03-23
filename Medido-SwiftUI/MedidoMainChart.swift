@@ -132,7 +132,7 @@ struct MedidoMainChart: View {
                 Button(action: {
                     // user defaults is persistence model for cal factor, send it each time pumping is commanded
                     // to be sure the correct cal factor is being used
-                    autoOff = false
+                    autoOffFill = false
                     let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
                     clearChartRecData()
                     if tele.isSPIpump == false {

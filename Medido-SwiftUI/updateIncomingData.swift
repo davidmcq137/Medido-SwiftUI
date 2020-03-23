@@ -178,10 +178,10 @@ func updateIncomingData () {
                     tele.fuelFlow = vf
                     vfa = vf
                 }
-                //print("fuelFlow \(vf)")
+          
                 if tele.selectedPlaneTankCap > 0 {
                     if vfa > tele.selectedPlaneTankCap  && tele.selectedPlaneTankCap > 0 { // don't auto off if tank cap is 0 ..
-                        if autoOff == false {
+                        if autoOffFill == false {
                             let utstr = String(format: "%.0f", tele.selectedPlaneTankCap)
                             if !tele.isMetric {
                                 utterance = AVSpeechUtterance(string: "Pump off at " + utstr +  " ounces")
@@ -198,7 +198,7 @@ func updateIncomingData () {
                             }
                             writeValue(data: "(Off)")
                         }
-                        autoOff = true
+                        autoOffFill = true
                     }
                 }
             case "fRAT":
@@ -208,6 +208,31 @@ func updateIncomingData () {
                     tele.flowRate = vf
                 }
                 //print("flowRate \(vf)")
+                // now compute average fuel flow -- only start after 10 secs to get stabilized
+                if tele.runningTime > 10.0 {
+                    if flowRateNumber <= 0 {
+                        flowRateNumber = 1
+                        flowRateSum = tele.flowRate
+                        flowRateAverage = flowRateSum
+                        flowRateLowCount = 0
+                    } else {
+                        flowRateSum = flowRateSum + tele.flowRate
+                        flowRateNumber = flowRateNumber + 1
+                        flowRateAverage = flowRateSum / Double(flowRateNumber)
+                    }
+                }
+                // if we've been running for 20 seconds (and thus averaging for 10...) and are in reverse (neg flowRate) see if we are emptying the tank .. signified by flow rate dropping below 30% of average
+                if tele.runningTime > 20 && flowRateSum < 0  && autoOffEmpty == false {
+                    if abs(tele.flowRate) < abs(flowRateAverage * 0.30) {
+                        print("low count: \(flowRateLowCount): \(tele.flowRate)")
+                        flowRateLowCount = flowRateLowCount + 1
+                    }
+                    if flowRateLowCount > 2 {
+                        setInfoMessage(msg: String(format: "Pump off ... low flow %.1f", 0.20 * flowRateAverage) )
+                        writeValue(data: "(Off)")
+                        autoOffEmpty = true
+                    }
+                }
             case "Batt":
                 //print("Batt: \(vf)")
                 tele.battVolt = vf * 7.504
