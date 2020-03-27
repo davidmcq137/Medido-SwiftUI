@@ -18,6 +18,7 @@ struct chartRecorder: View {
     let XP: [Double]
     let YP: [Double]
     let ZP: [Double]
+    let WP: [Double]
     let xrange: Double
     let nlabel: Int
     let ymin: Double
@@ -30,6 +31,10 @@ struct chartRecorder: View {
     let zlabel: String
     let zvalue: Double
     let zcolor: Color
+    let wmin: Double
+    let wmax: Double
+    let wcolor: Color
+    let wshow: Bool
     
     var body: some View {
         VStack(spacing: 5) {
@@ -51,6 +56,9 @@ struct chartRecorder: View {
                 graphGrid(hgrid: self.hgrid, vgrid: self.vgrid).aspectRatio(self.aspect, contentMode: .fill)
                 graphData(XP: self.XP, YP: self.YP, xrange: self.xrange, ymin: self.ymin, ymax: self.ymax, linewidth: 2).aspectRatio(self.aspect, contentMode: .fill).foregroundColor(self.ycolor).clipped()
                 graphData(XP: self.XP, YP: self.ZP, xrange: self.xrange, ymin: self.zmin, ymax: self.zmax, linewidth: 2).aspectRatio(self.aspect, contentMode: .fill).foregroundColor(self.zcolor).clipped()
+                if wshow == true {
+                    graphData(XP: self.XP, YP: self.WP, xrange: self.xrange, ymin: self.wmin, ymax: self.wmax, linewidth: 2).aspectRatio(self.aspect, contentMode: .fill).foregroundColor(self.wcolor).clipped()
+                }
                 graphLabels(XP: self.XP, xrange: self.xrange, nlabel: self.nlabel, wid: 0, hgt: 0)
                 }.padding().clipped()
         }
@@ -172,6 +180,9 @@ private struct graphData: Shape {
 
         for i in 0 ..< XP.count {
             //xp =  rect.minX + CGFloat( ( (xrange + 1) / xrange) * (XP[i] - XP.first!) / xrange) * rect.width
+            if YP[i] == 0.0 {
+                continue
+            }
             xp =  rect.minX + CGFloat((XP[i] - XP.first!) / xrange) * rect.width
             let ys = (YP[i] - ymin) / (ymax - ymin)
             if ys > 1 {

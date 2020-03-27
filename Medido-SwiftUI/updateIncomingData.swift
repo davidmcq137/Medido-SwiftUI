@@ -37,6 +37,7 @@ class Telem: ObservableObject {
     @Published var xp: [Double] = []
     @Published var yp: [Double] = []
     @Published var zp: [Double] = []
+    @Published var wp: [Double] = []
     @Published var msgStr: String = ""
     @Published var sliderSpeed: Int = 0
     @Published var sliderPressure: Int = 0
@@ -64,14 +65,18 @@ func clearChartRecData () {
             tele.xp[i] = 0.0
             tele.yp[i] = 0.0
             tele.zp[i] = 0.0
+            tele.wp[i] = 0.0
         }
     }
     tele.xp = []
     tele.yp = []
     tele.zp = []
+    tele.wp = []
     tele.xp.append(0.0)
     tele.yp.append(0.0)
     tele.zp.append(0.0)
+    tele.wp.append(0.0)
+    flowRateLongAvg = 0.0
 }
 
 func updateIncomingData () {
@@ -152,11 +157,13 @@ func updateIncomingData () {
                         tele.xp.remove(at: 0)
                         tele.yp.remove(at: 0)
                         tele.zp.remove(at: 0)
+                        tele.wp.remove(at: 0)
                     }
-                    //print("#, apppending: \(tele.xp.count), \(vf), \(tele.flowRate), \(tele.pressPSI_mB)")
+                    //print("#, appending: \(tele.xp.count), \(vf), \(tele.flowRate), \(tele.pressPSI_mB)/ \(flowRateTailAvg)")
                     tele.xp.append(vf)
                     tele.yp.append(tele.flowRate)
                     tele.zp.append(tele.pressPSI_mB)
+                    tele.wp.append(flowRateLongAvg)
                     tele.runningTime = vf
                 }
 
@@ -180,7 +187,7 @@ func updateIncomingData () {
                 }
           
                 if tele.selectedPlaneTankCap > 0 {
-                    if vfa > tele.selectedPlaneTankCap  && tele.selectedPlaneTankCap > 0 { // don't auto off if tank cap is 0 ..
+                    if vfa > tele.selectedPlaneTankCap * 1.10  && tele.selectedPlaneTankCap > 0 { // don't auto off if tank cap is 0 .. and only trip at cap + 10%
                         if autoOffFill == false {
                             let utstr = String(format: "%.0f", tele.selectedPlaneTankCap)
                             if !tele.isMetric {
@@ -196,7 +203,7 @@ func updateIncomingData () {
                             } else {
                                 setInfoMessage(msg: String(format: "Pump off at %.0f ml", tele.selectedPlaneTankCap) )
                             }
-                            writeValue(data: "(Off)")
+                            setPumpState(state: .Off)
                         }
                         autoOffFill = true
                     }
@@ -222,15 +229,43 @@ func updateIncomingData () {
                     }
                 }
                 // if we've been running for 20 seconds (and thus averaging for 10...) and are in reverse (neg flowRate) see if we are emptying the tank .. signified by flow rate dropping below 30% of average
-                if tele.runningTime > 20 && flowRateSum < 0  && autoOffEmpty == false {
+                if tele.runningTime > 20 && PumpState == .Empty && autoOffEmpty == false {
                     if abs(tele.flowRate) < abs(flowRateAverage * 0.30) {
                         print("low count: \(flowRateLowCount): \(tele.flowRate)")
                         flowRateLowCount = flowRateLowCount + 1
                     }
                     if flowRateLowCount > 2 {
                         setInfoMessage(msg: String(format: "Pump off ... low flow %.1f", 0.20 * flowRateAverage) )
-                        writeValue(data: "(Off)")
+                        setPumpState(state: .Off)
                         autoOffEmpty = true
+                    }
+                }
+                // if we have N points accumulated, compute the average flow for the last N values .. leave in global var flowRateTailAvg
+                var longsum: Double = 0.0
+                var shortsum: Double = 0.0
+                //print("#: \(tele.yp.count)")
+                //print("mod: \(tele.yp.count % (flowRateTailSize / 10))")
+                if PumpState == .Fill && tele.yp.count > flowRateTailSize { //&& tele.yp.count % (flowRateTailSize / 10) == 0 {
+                    for s in tele.yp.suffix(flowRateTailSize) {
+                        longsum = longsum + s
+                    }
+                    flowRateLongAvg = longsum / Double(flowRateTailSize)
+                    for s in tele.yp.suffix(20) {
+                        shortsum = shortsum + s
+                    }
+                    flowRateShortAvg = shortsum / 20.0
+                    var vsqsum: Double = 0
+                    var rms: Double = 0
+                    for s in tele.yp.suffix(flowRateTailSize) {
+                        vsqsum = vsqsum + (s - flowRateLongAvg) * (s - flowRateLongAvg)
+                    }
+                    rms = sqrt(vsqsum) / sqrt(Double(flowRateTailSize))
+                    
+                    //print("#: \(tele.yp.count), avg: \(flowRateLongAvg), rmsV: \(rms), ratio: \(abs(flowRateShortAvg - flowRateLongAvg) / rms), runavg: \(flowRateShortAvg), fill button ct: \(fillButtonPresses)")
+                    // note that the ratio of 1.8 was determined empirically...
+                    if abs(flowRateShortAvg - flowRateLongAvg) > 1.2 * rms && flowRateShortAvg > 0 {
+                        setPumpState(state: .Off)
+                        setInfoMessage(msg: "Pump off - Pressure Drop/Overflow")
                     }
                 }
             case "Batt":
@@ -247,7 +282,7 @@ func updateIncomingData () {
             case "pSTP":
                 if tele.overFlowShutoff {
                     setInfoMessage(msg: "Pump off: Overflow detected")
-                    writeValue(data: "(Off)")
+                    setPumpState(state: .Off)
                 }
             case "fDEL":
                 //if vf != 0.0 {
@@ -285,6 +320,18 @@ func updateIncomingData () {
             }
         }
     } while true
+}
+
+func setPumpState (state: RunState) {
+    switch state {
+    case .Fill :
+        writeValue(data: "(Fill)")
+    case .Empty :
+        writeValue(data: "(Empty)")
+    case .Off :
+        writeValue(data: "(Off)")
+    }
+    PumpState = state
 }
 
 func writeValue(data: String) {

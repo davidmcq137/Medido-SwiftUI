@@ -130,6 +130,7 @@ struct MedidoSettings: View {
                                         tele.xp.remove(at: 0)
                                         tele.yp.remove(at: 0)
                                         tele.zp.remove(at: 0)
+                                        tele.wp.remove(at: 0)
                                     }
                                     tele.runningTime = self.runTime
                                     let rtmins = floor(self.runTime / 60.0)
@@ -149,7 +150,7 @@ struct MedidoSettings: View {
                                         tele.pressPSI_mB = 400 + 300 * cos(2 * .pi * self.runTime / 60.0)
                                     }
                                     tele.zp.append(tele.pressPSI_mB)
-                                    
+                                    tele.wp.append(flowRateLongAvg)
                                     self.runTime += interval
                                     //print("Timer fired!")
                                     //print("runTime: \(self.runTime)")
@@ -157,7 +158,14 @@ struct MedidoSettings: View {
                             }
                             self.timerRunning = true
                         } else {
+                            // demo mode ended, clear gauges, text status and chart
                             self.timerRunning = false
+                            clearChartRecData()
+                            tele.flowRate = 0.0
+                            tele.pressPSI_mB = 0.0
+                            tele.fuelFlow = 0.0
+                            tele.runningTime = 0.0
+                            tele.runningTimeString = "---"
                         }
                     }){
                         Text("Demo")

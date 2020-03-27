@@ -17,6 +17,14 @@ var flowRateAverage: Double = 0.0
 var flowRateSum: Double = 0.0
 var flowRateNumber: Int = 0
 var flowRateLowCount: Int = 0
+var flowRateLongAvg: Double = 0
+var flowRateShortAvg: Double = 0
+let flowRateTailSize: Int = 100
+var fillButtonPresses: Int = 0
+enum RunState {
+    case Empty, Off, Fill
+}
+var PumpState = RunState.Off
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 

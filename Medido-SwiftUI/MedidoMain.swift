@@ -117,7 +117,7 @@ struct MedidoMain: View {
                         writeValue(data: String(format: "(CalE: %d)", Int(ppoE*10)))
                         writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
                     }
-                    writeValue(data: "(Empty)")
+                    setPumpState(state: .Empty)
                     clearChartRecData()
                 }){
                     Text("Empty")
@@ -132,7 +132,7 @@ struct MedidoMain: View {
                 }
                 //Spacer()
                 Button(action: {
-                    writeValue(data: "(Off)")
+                    setPumpState(state: .Off)
                 }){
                     Text("Off")
                         .font(.system(size: fsize))
@@ -153,7 +153,7 @@ struct MedidoMain: View {
                         writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
                         writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
                     }
-                    writeValue(data: "(Fill)")
+                    setPumpState(state: .Fill)
                     clearChartRecData()
                 }){
                     Text("Fill")

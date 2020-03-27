@@ -20,18 +20,18 @@ struct ContentView: View {
     
     var body: some View {
         TabView (selection: $selection) {
-            MedidoMain()
-                .tabItem {
-                    VStack {
-                        Image(systemName: "1.circle")
-                        Text("Gauge")
-                    }
-            }.tag(1)
             MedidoMainCombo()
                 .tabItem {
                     VStack {
+                        Image(systemName: "1.circle")
+                        Text("Main")
+                    }
+            }.tag(1)
+            MedidoMain()
+                .tabItem {
+                    VStack {
                         Image(systemName: "2.circle")
-                        Text("Combo")
+                        Text("Gauge")
                     }
             }.tag(2)
             MedidoDeviceList()

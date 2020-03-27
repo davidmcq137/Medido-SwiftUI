@@ -39,7 +39,7 @@ struct Gauge: View {
                 GaugeArc()//.border(Color.red)
                 Needle()
                     .rotationEffect(needleAngle(value: self.value, minValue: self.minValue, maxValue: self.maxValue), anchor: .center)
-                if showBug == true {
+                if showBug == true && self.bugValue != 0.0 {
                     Bug()
                         .rotationEffect(needleAngle(value: self.bugValue, minValue: self.minValue, maxValue: self.maxValue), anchor: .center).foregroundColor(Color.black)
                 }
@@ -152,7 +152,7 @@ struct GaugeArc : Shape {
         //print("GaugeArc \(rect.minX) \(rect.midX) \(rect.maxX) \(rect.minY), \(rect.midY) \(rect.maxY)")
         var p = Path()
         p.addArc(center: CGPoint(x: rect.midX, y:rect.midY), radius: min(rect.midX, rect.midY)*0.65, startAngle: .degrees(-135-90-10), endAngle: .degrees(135-90+10), clockwise: false)
-        return p.strokedPath(.init(lineWidth: min(rect.maxX, rect.maxY)/18, lineCap: .round))
+        return p.strokedPath(.init(lineWidth: min(rect.maxX, rect.maxY)/16, lineCap: .round))
     }
 }
 

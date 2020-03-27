@@ -23,9 +23,9 @@ struct MedidoMainCombo: View {
     var fsize: CGFloat = 22
     
     @State private var fRIoz: Int = 0
-    let flowRangeStringsOz: [String] = ["[-60,60]", "[-30,30]", "[-15,15]"]
-    let flowRangeMinOz: [Double] = [-60, -30, -15]
-    let flowRangeMaxOz: [Double] = [60, 30, 15]
+    let flowRangeStringsOz: [String] = ["[-64,64]", "[-32,32]", "[-16,16]", "[-8,8]"]
+    let flowRangeMinOz: [Double] = [-64, -32, -16, -8]
+    let flowRangeMaxOz: [Double] = [64, 32, 16, 8]
     
     @State private var fRIml: Int = 0
     let flowRangeStringsml: [String] = ["[-1600,1600]", "[-800,800]", "[-400,400]"]
@@ -41,6 +41,9 @@ struct MedidoMainCombo: View {
     let pressRangeStringsmbar: [String] = ["[0-800]", "[0-400]", "[0-200]" ]
     let pressRangeMinmbar: [Double] = [0,0,0]
     let pressRangeMaxmbar: [Double] = [800, 400, 200]
+    
+    @State private var avgVisible: Bool = false
+    @State private var fillText: String = "Fill"
     
     
     @GestureState var draggedBy = CGSize.zero
@@ -142,9 +145,9 @@ struct MedidoMainCombo: View {
                 HStack {
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: false, bugValue: 0).foregroundColor(.blue)//.animation(.default)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: true, bugValue: flowRateLongAvg).foregroundColor(.blue)//.animation(.default)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.6, -0.8, 0, 0.8, 1.6], minValue: -1.6, maxValue: 1.6, showBug: false, bugValue: 0).foregroundColor(.blue)//.animation(.default)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.6, -0.8, 0, 0.8, 1.6], minValue: -1.6, maxValue: 1.6, showBug: true, bugValue: flowRateLongAvg).foregroundColor(.blue)//.animation(.default)//.border(Color.yellow)
                         }
                     }
                     VStack {
@@ -179,21 +182,23 @@ struct MedidoMainCombo: View {
             
             if !tel.isMetric {
                 chartRecorder(aspect: 2.0 * 812 / devmbh, hgrid: 6, vgrid: 4, //812 is height of 11pro .. scale from there
-                              XP: tel.xp, YP: tel.yp, ZP: tel.zp,
-                              xrange: 120.0, nlabel: 6, //flowRangeStrings[flowRangeIndex]
-                              ymin: flowRangeMinOz[fRIoz], ymax: flowRangeMaxOz[fRIoz],
-                              ylabel: "Flow (oz/min): " + flowRangeStringsOz[fRIoz], yvalue: tel.flowRate, ycolor: Color.blue,
-                              zmin: pressRangeMinPSI[pRIpsi],   zmax: pressRangeMaxPSI[pRIpsi],  zlabel: "Press(psi): " + pressRangeStringsPSI[pRIpsi],
-                              zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                    XP: tel.xp, YP: tel.yp, ZP: tel.zp, WP: tel.wp,
+                    xrange: 120.0, nlabel: 6, //flowRangeStrings[flowRangeIndex]
+                    ymin: flowRangeMinOz[fRIoz], ymax: flowRangeMaxOz[fRIoz],
+                    ylabel: "Flow (oz/min): " + flowRangeStringsOz[fRIoz], yvalue: tel.flowRate, ycolor: Color.blue,
+                    zmin: pressRangeMinPSI[pRIpsi],   zmax: pressRangeMaxPSI[pRIpsi],  zlabel: "Press(psi): " + pressRangeStringsPSI[pRIpsi],
+                    zvalue: tel.pressPSI_mB, zcolor: Color.yellow,
+                    wmin: flowRangeMinOz[fRIoz], wmax: flowRangeMaxOz[fRIoz], wcolor: Color.pink, wshow: avgVisible
                 ).gesture(drag).padding()
             } else {
                 chartRecorder(aspect: 2.0 * 812 / devmbh, hgrid: 6, vgrid: 4,
-                              XP: tel.xp, YP: tel.yp, ZP: tel.zp,
+                              XP: tel.xp, YP: tel.yp, ZP: tel.zp, WP: tel.wp,
                               xrange: 120.0, nlabel: 6,
                               ymin: flowRangeMinml[fRIml], ymax: flowRangeMaxml[fRIml], ylabel: "F (ml/min): " + flowRangeStringsml[fRIml],
                               yvalue: tel.flowRate, ycolor: Color.blue,
                               zmin: pressRangeMinmbar[pRImbar], zmax: pressRangeMaxmbar[pRImbar], zlabel: "P (mBar): " + pressRangeStringsmbar[pRImbar],
-                              zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                              zvalue: tel.pressPSI_mB, zcolor: Color.yellow,
+                              wmin: flowRangeMinOz[fRIml], wmax: flowRangeMaxOz[fRIml], wcolor: Color.pink, wshow: avgVisible
                 ).gesture(drag).padding()
             }
             HStack {
@@ -201,6 +206,9 @@ struct MedidoMainCombo: View {
                     // user defaults is persistence model for cal factor, send it each time pumping is commanded
                     // to be sure the correct cal factor is being used
                     autoOffEmpty = false
+                    fillButtonPresses = 0
+                    self.avgVisible = false
+                    self.fillText = "Fill"
                     flowRateNumber = 0
                     flowRateSum = 0.0 // these three statements arm to auto off detector
                     let ppoE = Double(UserDefaults.standard.integer(forKey: "ppoEmpty")) / 10.0
@@ -210,7 +218,7 @@ struct MedidoMainCombo: View {
                         writeValue(data: String(format: "(Prs: %d)", tele.sliderPressure))
                         writeValue(data: String(format: "(Spd: %d)", tele.sliderSpeed))
                     }
-                    writeValue(data: "(Empty)")
+                    setPumpState(state: .Empty)
                     clearChartRecData()
                 }){
                     Text("Empty")
@@ -225,7 +233,10 @@ struct MedidoMainCombo: View {
                 }
                 Spacer()
                 Button(action: {
-                    writeValue(data: "(Off)")
+                    fillButtonPresses = 0
+                    self.avgVisible = false
+                    self.fillText = "Fill"
+                    setPumpState(state: .Off)
                 }){
                     Text("Off")
                         .font(.system(size: fsize))
@@ -242,17 +253,24 @@ struct MedidoMainCombo: View {
                     // user defaults is persistence model for cal factor, send it each time pumping is commanded
                     // to be sure the correct cal factor is being used
                     autoOffFill = false
-                    let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
-                    if tele.isSPIpump == false {
-                        writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
-                        writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
-                        writeValue(data: String(format: "(Prs: %d)", tele.sliderPressure))
-                        writeValue(data: String(format: "(Spd: %d)", tele.sliderSpeed))
+                    fillButtonPresses = fillButtonPresses + 1
+                    //print("fbp: \(fillButtonPresses), mod: \(fillButtonPresses % 2)")
+                    if fillButtonPresses == 1 {
+                        let ppoF = Double(UserDefaults.standard.integer(forKey: "ppoFill")) / 10.0
+                        if tele.isSPIpump == false {
+                            writeValue(data: String(format: "(CalF: %d)", Int(ppoF*10)))
+                            writeValue(data: String(format: "(pMAX: %d)", tele.maxPWM))
+                            writeValue(data: String(format: "(Prs: %d)", tele.sliderPressure))
+                            writeValue(data: String(format: "(Spd: %d)", tele.sliderSpeed))
+                        }
+                        setPumpState(state: .Fill)
+                        clearChartRecData()
+                    } else {
+                        self.avgVisible.toggle()
+                        self.fillText = "Auto"
                     }
-                    writeValue(data: "(Fill)")
-                    clearChartRecData()
                 }){
-                    Text("Fill")
+                    Text(fillText)
                         .font(.system(size: fsize))
                         .frame(width: 65)
                         .padding(5)

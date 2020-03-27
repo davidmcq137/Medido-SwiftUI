@@ -27,17 +27,19 @@ struct MedidoMainChart: View {
         VStack {
             if !tel.isMetric {
                 chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
-                              XP: tel.xp, YP: tel.yp, ZP: tel.zp,
+                              XP: tel.xp, YP: tel.yp, ZP: tel.zp, WP: tel.wp,
                               xrange: 120.0, nlabel: 6,
                               ymin: -10.0, ymax: 10.0, ylabel: "Flow (oz/min) [-10,10]: ", yvalue: tel.flowRate, ycolor: Color.blue,
-                              zmin: 0.0,   zmax: 2.0,  zlabel: "Press(psi) [0,2]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                              zmin: 0.0,   zmax: 2.0,  zlabel: "Press(psi) [0,2]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow,
+                              wmin: -10, wmax: 10, wcolor: Color.white, wshow: true
                 )
             } else {
                 chartRecorder(aspect: 2, hgrid: 6, vgrid: 4,
-                              XP: tel.xp, YP: tel.yp, ZP: tel.zp,
+                              XP: tel.xp, YP: tel.yp, ZP: tel.zp, WP: tel.wp,
                               xrange: 120.0, nlabel: 6,
                               ymin: -500.0, ymax: 500.0, ylabel: "F (ml/min) [-500,500]: ", yvalue: tel.flowRate, ycolor: Color.blue,
-                              zmin: 0.0,   zmax: 200.0,  zlabel: "P (mB) [0,200]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow
+                              zmin: 0.0,   zmax: 200.0,  zlabel: "P (mB) [0,200]: ",   zvalue: tel.pressPSI_mB, zcolor: Color.yellow,
+                              wmin: -500, wmax: 500, wcolor: Color.white, wshow: true
                 )
             }
             if tel.isMetric == false {
@@ -117,7 +119,7 @@ struct MedidoMainChart: View {
                 }
                 //Spacer()
                 Button(action: {
-                    writeValue(data: "(Off)")
+                    setPumpState(state: .Off)
                 }){
                     Text("Off")
                         .font(.system(size: fsize))
