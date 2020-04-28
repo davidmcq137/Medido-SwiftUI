@@ -48,6 +48,7 @@ struct MedidoMainCombo: View {
     
     @GestureState var draggedBy = CGSize.zero
     @GestureState var draggedPressBy = CGSize.zero
+    @GestureState var draggedSpeedBy = CGSize.zero
 
     var drag: some Gesture {
         DragGesture(minimumDistance: 10)
@@ -137,6 +138,34 @@ struct MedidoMainCombo: View {
             writeValue(data: "(Prs: \(self.tel.sliderPressure))")
         } //
     }
+    
+    var dragSpeed : some Gesture {
+        DragGesture(minimumDistance: 5)
+            .updating($draggedSpeedBy) { value, state, transaction in
+                state = value.translation
+        }
+        .onEnded { arg in
+            let xdist = arg.location.x - arg.startLocation.x
+            let ydist = arg.startLocation.y - arg.location.y
+            let scale: CGFloat = 20.0
+            //print("x dist: \(arg.location.x - arg.startLocation.x)")
+            //print("y dist: \(arg.startLocation.y - arg.location.y)")
+            var dist: CGFloat
+            if abs(xdist) >= abs(ydist) {
+                dist = xdist
+            } else {
+                dist = ydist
+            }
+            self.tel.sliderSpeed = self.tel.sliderSpeed + Int (dist / scale)
+            if self.tel.sliderSpeed > 100 { //  10.0 psi
+                self.tel.sliderSpeed = 100
+            }
+            if self.tel.sliderSpeed < 0 {
+                self.tel.sliderSpeed = 0
+            }
+            writeValue(data: "(Spd: \(self.tel.sliderSpeed))")
+        } //
+    }
 
     var body: some View {
         VStack {
@@ -145,9 +174,9 @@ struct MedidoMainCombo: View {
                 HStack {
                     VStack {
                         if tel.isMetric == false {
-                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: true, bugValue: flowRateLongAvg).foregroundColor(.blue)//.animation(.default)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate, fmtstr: "%.0f", title: "Flow Rate", units: "oz/min", labels: [-45, -30, -15, 0, 15, 30, 45], minValue: -45, maxValue: 45, showBug: true, bugValue: flowRateLongAvg).foregroundColor(.blue).gesture(dragSpeed)//.animation(.default)//.border(Color.yellow)
                         } else {
-                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.6, -0.8, 0, 0.8, 1.6], minValue: -1.6, maxValue: 1.6, showBug: true, bugValue: flowRateLongAvg).foregroundColor(.blue)//.animation(.default)//.border(Color.yellow)
+                            Gauge(value: self.tel.flowRate / 1000, fmtstr: "%.1f", title: "Flow Rate", units: "l/min", labels: [-1.6, -0.8, 0, 0.8, 1.6], minValue: -1.6, maxValue: 1.6, showBug: true, bugValue: flowRateLongAvg).foregroundColor(.blue).gesture(dragSpeed)//.animation(.default)//.border(Color.yellow)
                         }
                     }
                     VStack {

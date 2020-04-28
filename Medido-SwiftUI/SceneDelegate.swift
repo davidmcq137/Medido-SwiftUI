@@ -25,6 +25,8 @@ enum RunState {
     case Empty, Off, Fill
 }
 var PumpState = RunState.Off
+let ttsLanguage = "en-GB"
+
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 

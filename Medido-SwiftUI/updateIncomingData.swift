@@ -195,7 +195,7 @@ func updateIncomingData () {
                             } else {
                                 utterance = AVSpeechUtterance(string: "Pump off at " + utstr +  " milliliters")
                             }
-                            utterance.voice = AVSpeechSynthesisVoice(language: "en-GB")
+                            utterance.voice = AVSpeechSynthesisVoice(language: ttsLanguage)
                             utterance.rate = 0.5
                             synth.speak(utterance)
                             if !tele.isMetric {
@@ -235,9 +235,13 @@ func updateIncomingData () {
                         flowRateLowCount = flowRateLowCount + 1
                     }
                     if flowRateLowCount > 2 {
-                        setInfoMessage(msg: String(format: "Pump off ... low flow %.1f", 0.20 * flowRateAverage) )
+                        setInfoMessage(msg: "Pump off ... low flow")
                         setPumpState(state: .Off)
                         autoOffEmpty = true
+                        utterance = AVSpeechUtterance(string: "Pump off .. low flow")
+                        utterance.voice = AVSpeechSynthesisVoice(language: ttsLanguage)
+                        utterance.rate = 0.5
+                        synth.speak(utterance)
                     }
                 }
                 // if we have N points accumulated, compute the average flow for the last N values .. leave in global var flowRateTailAvg
@@ -266,6 +270,15 @@ func updateIncomingData () {
                     if abs(flowRateShortAvg - flowRateLongAvg) > 1.2 * rms && flowRateShortAvg > 0 {
                         setPumpState(state: .Off)
                         setInfoMessage(msg: "Pump off - Pressure Drop/Overflow")
+                        let utstr = String(format: "%.0f", tele.fuelFlow)
+                        if !tele.isMetric {
+                            utterance = AVSpeechUtterance(string: "Pump off at " + utstr +  " ounces")
+                        } else {
+                            utterance = AVSpeechUtterance(string: "Pump off at " + utstr +  " milliliters")
+                        }
+                        utterance.voice = AVSpeechSynthesisVoice(language: ttsLanguage)
+                        utterance.rate = 0.5
+                        synth.speak(utterance)
                     }
                 }
             case "Batt":
@@ -277,6 +290,10 @@ func updateIncomingData () {
                     print("Powering off, bco: \(bco)")
                     setInfoMessage(msg: String(format: "Auto power off. Pump Battery at %.1fV", tele.battVolt) )
                     writeValue(data: "(PwrOff)")
+                    utterance = AVSpeechUtterance(string: "Auto Power off. Main battery low")
+                    utterance.voice = AVSpeechSynthesisVoice(language: ttsLanguage)
+                    utterance.rate = 0.5
+                    synth.speak(utterance)
                 }
                 break
             case "pSTP":

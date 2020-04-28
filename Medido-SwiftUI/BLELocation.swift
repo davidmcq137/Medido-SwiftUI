@@ -173,7 +173,7 @@ class BLELocation:  UIResponder, UIApplicationDelegate, CBCentralManagerDelegate
         print("In Medido startup")
         print("Screen H x W: \(UIScreen.main.bounds.height) x \(UIScreen.main.bounds.width)")
         let utterance = AVSpeechUtterance(string: "Launching Medido Pump")
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
+        utterance.voice = AVSpeechSynthesisVoice(language: ttsLanguage)
         utterance.rate = 0.5
         synth = AVSpeechSynthesizer()
         print("about to speak utterance")
